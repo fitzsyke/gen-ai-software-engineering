@@ -56,3 +56,7 @@ temp/
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+
+
+# Claude specific files
+.claude*

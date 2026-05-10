@@ -1,0 +1,9 @@
+id,fromAccount,toAccount,amount,currency,type,timestamp,status
+"24dbb6f5-2998-4d61-bb34-9d35d6bbe8a3","ACC-00001","ACC-ALICE","2500","USD","deposit","2026-05-10T19:12:14.364Z","completed"
+"910cad63-f1a8-426b-8866-b766f2abd491","ACC-ALICE","ACC-BOB01","350","USD","transfer","2026-05-10T19:12:14.366Z","completed"
+"78b60102-c9b7-4102-9f47-2635a7f4168f","ACC-BOB01","ACC-ATM01","100","USD","withdrawal","2026-05-10T19:12:14.368Z","completed"
+"73134313-dba4-4ab2-80b6-9576e1bd1a8d","ACC-CLNT1","ACC-ALICE","800","EUR","transfer","2026-05-10T19:12:14.369Z","completed"
+"babba5a2-1adc-471d-8cde-0c8e0b4582ad","ACC-00001","ACC-ALICE","2500","USD","deposit","2026-05-10T19:31:12.927Z","completed"
+"256f9205-c228-46a4-8d7e-39dce4547bf1","ACC-ALICE","ACC-BOB01","350","USD","transfer","2026-05-10T19:31:12.930Z","completed"
+"9f5e60a6-f6e4-43f8-863e-3e38399d93b5","ACC-BOB01","ACC-ATM01","100","USD","withdrawal","2026-05-10T19:31:12.931Z","completed"
+"f5e777a8-e65b-4ab0-adc3-437818b31e5a","ACC-CLNT1","ACC-ALICE","800","EUR","transfer","2026-05-10T19:31:12.932Z","completed"

@@ -1,0 +1,303 @@
+# Banking Transactions API — Sample Requests
+# Open in VS Code with the REST Client extension (Ctrl+Shift+P → "REST Client")
+# Click "Send Request" above any ### block to fire that request.
+
+@baseUrl = http://localhost:3000
+
+# ============================================================
+# 🏥 Health check
+# ============================================================
+
+### Root — confirm the server is alive
+GET {{baseUrl}}/
+
+# ============================================================
+# 💸 Create Transactions (POST /transactions)
+# ============================================================
+
+### 1. Deposit — Alice receives her paycheck
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-00001",
+  "toAccount":   "ACC-ALICE",
+  "amount":      2500.00,
+  "currency":    "USD",
+  "type":        "deposit"
+}
+
+###
+
+### 2. Transfer — Alice pays Bob for freelance work
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-ALICE",
+  "toAccount":   "ACC-BOB01",
+  "amount":      350.00,
+  "currency":    "USD",
+  "type":        "transfer"
+}
+
+###
+
+### 3. Withdrawal — Bob takes cash out
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-BOB01",
+  "toAccount":   "ACC-ATM01",
+  "amount":      100.00,
+  "currency":    "USD",
+  "type":        "withdrawal"
+}
+
+###
+
+### 4. Transfer in EUR — Alice gets paid by a foreign client
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-CLNT1",
+  "toAccount":   "ACC-ALICE",
+  "amount":      800.00,
+  "currency":    "EUR",
+  "type":        "transfer"
+}
+
+###
+
+### 5. Transfer — Bob repays Alice (partial, cents included)
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-BOB01",
+  "toAccount":   "ACC-ALICE",
+  "amount":      50.25,
+  "currency":    "USD",
+  "type":        "transfer"
+}
+
+# ============================================================
+# ❌ Validation Error Examples (should return 400)
+# ============================================================
+
+### Bad: negative amount
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-12345",
+  "toAccount":   "ACC-67890",
+  "amount":      -50,
+  "currency":    "USD",
+  "type":        "transfer"
+}
+
+###
+
+### Bad: amount with too many decimals
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-12345",
+  "toAccount":   "ACC-67890",
+  "amount":      19.999,
+  "currency":    "USD",
+  "type":        "transfer"
+}
+
+###
+
+### Bad: invalid account format (missing ACC- prefix)
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "12345",
+  "toAccount":   "ACC-67890",
+  "amount":      100,
+  "currency":    "USD",
+  "type":        "transfer"
+}
+
+###
+
+### Bad: unsupported currency
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-12345",
+  "toAccount":   "ACC-67890",
+  "amount":      100,
+  "currency":    "XYZ",
+  "type":        "transfer"
+}
+
+###
+
+### Bad: same fromAccount and toAccount
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-12345",
+  "toAccount":   "ACC-12345",
+  "amount":      100,
+  "currency":    "USD",
+  "type":        "transfer"
+}
+
+# ============================================================
+# 📋 List Transactions (GET /transactions)
+# ============================================================
+
+### All transactions — no filters
+GET {{baseUrl}}/transactions
+
+###
+
+### Filter by account (sent or received)
+GET {{baseUrl}}/transactions?accountId=ACC-ALICE
+
+###
+
+### Filter by type
+GET {{baseUrl}}/transactions?type=transfer
+
+###
+
+### Filter by date range (adjust dates to match your test data)
+GET {{baseUrl}}/transactions?from=2024-01-01&to=2026-12-31
+
+###
+
+### Combine filters — Alice's transfers only
+GET {{baseUrl}}/transactions?accountId=ACC-ALICE&type=transfer
+
+# ============================================================
+# 🔍 Get a Single Transaction (GET /transactions/:id)
+# ============================================================
+
+### Replace the ID below with a real one from a previous POST response
+GET {{baseUrl}}/transactions/REPLACE-WITH-REAL-ID
+
+###
+
+### 404 example — ID that doesn't exist
+GET {{baseUrl}}/transactions/00000000-0000-0000-0000-000000000000
+
+# ============================================================
+# 💰 Account Balance (GET /accounts/:accountId/balance)
+# ============================================================
+
+### Alice's balance (run after creating the sample transactions above)
+GET {{baseUrl}}/accounts/ACC-ALICE/balance
+
+###
+
+### Bob's balance
+GET {{baseUrl}}/accounts/ACC-BOB01/balance
+
+###
+
+### 400 example — invalid account format
+GET {{baseUrl}}/accounts/INVALID/balance
+
+# ============================================================
+# 📈 Account Summary (GET /accounts/:accountId/summary)
+# ============================================================
+
+### Alice's full activity summary
+GET {{baseUrl}}/accounts/ACC-ALICE/summary
+
+###
+
+### Bob's summary
+GET {{baseUrl}}/accounts/ACC-BOB01/summary
+
+###
+
+### Account with no transactions — returns zero counts, not an error
+GET {{baseUrl}}/accounts/ACC-NEW01/summary
+
+# ============================================================
+# 💰 Simple Interest (GET /accounts/:accountId/interest)
+# ============================================================
+
+### Alice's interest: 5% annual rate over 30 days
+GET {{baseUrl}}/accounts/ACC-ALICE/interest?rate=0.05&days=30
+
+###
+
+### Higher rate, longer term — 8% over 1 year (365 days)
+GET {{baseUrl}}/accounts/ACC-ALICE/interest?rate=0.08&days=365
+
+###
+
+### Bob's interest at 3.5% for a quarter (90 days)
+GET {{baseUrl}}/accounts/ACC-BOB01/interest?rate=0.035&days=90
+
+###
+
+### 400 — missing rate parameter
+GET {{baseUrl}}/accounts/ACC-ALICE/interest?days=30
+
+###
+
+### 400 — negative rate
+GET {{baseUrl}}/accounts/ACC-ALICE/interest?rate=-0.05&days=30
+
+###
+
+### 400 — days is zero
+GET {{baseUrl}}/accounts/ACC-ALICE/interest?rate=0.05&days=0
+
+# ============================================================
+# 📤 Export Transactions as CSV (GET /transactions/export)
+# ============================================================
+
+# ℹ️  Rate Limiting note
+# Every response includes these headers so you can track your quota:
+#   X-RateLimit-Limit:     100
+#   X-RateLimit-Remaining: <requests left in this window>
+#   X-RateLimit-Reset:     <Unix timestamp when the window resets>
+#
+# When you exceed 100 requests/minute from the same IP, the API responds
+# with 429 Too Many Requests and a Retry-After header (seconds to wait).
+# The window resets automatically — no action required on your part.
+
+### Export all transactions as CSV
+GET {{baseUrl}}/transactions/export?format=csv
+
+###
+
+### Export only Alice's transactions
+GET {{baseUrl}}/transactions/export?format=csv&accountId=ACC-ALICE
+
+###
+
+### Export transfers only
+GET {{baseUrl}}/transactions/export?format=csv&type=transfer
+
+###
+
+### Export with combined filters — Alice's transfers in a date range
+GET {{baseUrl}}/transactions/export?format=csv&accountId=ACC-ALICE&type=transfer&from=2024-01-01&to=2026-12-31
+
+###
+
+### 400 — missing format parameter
+GET {{baseUrl}}/transactions/export
+
+###
+
+### 400 — unsupported format
+GET {{baseUrl}}/transactions/export?format=xml
