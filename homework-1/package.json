@@ -1,0 +1,26 @@
+{
+  "name": "banking-transactions-api",
+  "version": "1.0.0",
+  "description": "A RESTful API for banking transactions with in-memory storage, built with Node.js and Express",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [
+    "banking",
+    "transactions",
+    "REST",
+    "API",
+    "express"
+  ],
+  "author": "Artem Saienko",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.0",
+    "uuid": "^11.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

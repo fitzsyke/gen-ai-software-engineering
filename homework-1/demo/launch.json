@@ -1,0 +1,21 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "homework-1 (production)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start"],
+      "port": 3000,
+      "autoPort": true,
+      "cwd": "homework-1"
+    },
+    {
+      "name": "homework-1 (dev / nodemon)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000,
+      "autoPort": true,
+      "cwd": "homework-1"
+    }
+  ]
+}

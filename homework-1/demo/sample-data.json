@@ -1,0 +1,52 @@
+[
+  {
+    "description": "Alice deposits her paycheck into her account",
+    "request": {
+      "fromAccount": "ACC-00001",
+      "toAccount":   "ACC-ALICE",
+      "amount":      2500.00,
+      "currency":    "USD",
+      "type":        "deposit"
+    }
+  },
+  {
+    "description": "Alice pays Bob for freelance work",
+    "request": {
+      "fromAccount": "ACC-ALICE",
+      "toAccount":   "ACC-BOB01",
+      "amount":      350.00,
+      "currency":    "USD",
+      "type":        "transfer"
+    }
+  },
+  {
+    "description": "Bob withdraws cash at an ATM",
+    "request": {
+      "fromAccount": "ACC-BOB01",
+      "toAccount":   "ACC-ATM01",
+      "amount":      100.00,
+      "currency":    "USD",
+      "type":        "withdrawal"
+    }
+  },
+  {
+    "description": "Alice receives a Euro payment from a client abroad",
+    "request": {
+      "fromAccount": "ACC-CLNT1",
+      "toAccount":   "ACC-ALICE",
+      "amount":      800.00,
+      "currency":    "EUR",
+      "type":        "transfer"
+    }
+  },
+  {
+    "description": "Bob tops up Alice's account as repayment",
+    "request": {
+      "fromAccount": "ACC-BOB01",
+      "toAccount":   "ACC-ALICE",
+      "amount":      50.25,
+      "currency":    "USD",
+      "type":        "transfer"
+    }
+  }
+]
