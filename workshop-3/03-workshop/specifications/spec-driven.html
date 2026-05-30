@@ -1,0 +1,2735 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Spec-Driven Development — Workshop learning guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js" crossorigin></script>
+<style>
+  :root {
+    --paper: #ffffff;
+    --paper-2: #F5F5F5;
+    --paper-3: #E1E1E1;
+    --ink: #241F20;
+    --ink-2: #4a5464;
+    --ink-3: #728197;
+    --ink-faint: #9C9C9C;
+    --amber: #133EF8;
+    --amber-2: #00b2ff;
+    --amber-soft: #e8eeff;
+    --sage: #00b2ff;
+    --sage-soft: #e6f7ff;
+    --rust: #FF4550;
+    --line: #E1E1E1;
+    --line-soft: #F5F5F5;
+  }
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 30% at 80% 0%, rgba(19,62,248,0.06), transparent 60%),
+      radial-gradient(ellipse 60% 30% at 0% 100%, rgba(0,178,255,0.05), transparent 60%);
+    background-attachment: fixed;
+  }
+  .display { font-family: "Inter", system-ui, sans-serif; letter-spacing: -0.01em; }
+  .display-tight { font-family: "Inter", system-ui, sans-serif; letter-spacing: -0.02em; }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+  .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+  .text-paper { color: var(--paper); }
+  .text-ink { color: var(--ink); }
+  .text-ink-2 { color: var(--ink-2); }
+  .text-ink-3 { color: var(--ink-3); }
+  .text-ink-faint { color: var(--ink-faint); }
+  .text-amber { color: var(--amber); }
+  .text-amber-2 { color: var(--amber-2); }
+  .text-sage { color: var(--sage); }
+  .text-rust { color: var(--rust); }
+
+  .bg-paper { background: var(--paper); }
+  .bg-paper-2 { background: var(--paper-2); }
+  .bg-paper-3 { background: var(--paper-3); }
+  .bg-amber-soft { background: var(--amber-soft); }
+  .bg-sage-soft { background: var(--sage-soft); }
+  .bg-ink { background: var(--ink); }
+  .border-line { border-color: var(--line); }
+  .border-line-soft { border-color: var(--line-soft); }
+  .border-amber { border-color: var(--amber); }
+  .border-sage { border-color: var(--sage); }
+  .ruled { border-bottom: 1px solid var(--line); }
+
+  .underline-amber { text-decoration: underline; text-decoration-color: var(--amber-2); text-decoration-thickness: 2px; text-underline-offset: 6px; }
+  .marker-amber {
+    background: linear-gradient(180deg, transparent 60%, var(--amber-soft) 60%, var(--amber-soft) 92%, transparent 92%);
+    padding: 0 3px;
+  }
+  .marker-sage {
+    background: linear-gradient(180deg, transparent 60%, var(--sage-soft) 60%, var(--sage-soft) 92%, transparent 92%);
+    padding: 0 3px;
+  }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--paper-2);
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .chip-amber { border-color: var(--amber); color: var(--amber); background: rgba(19,62,248,0.06); }
+  .chip-sage { border-color: var(--sage); color: var(--sage); background: rgba(0,178,255,0.06); }
+
+  .dot { width: 6px; height: 6px; border-radius: 999px; display: inline-block; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px; border-radius: 4px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn-primary {
+    background: var(--ink); border-color: var(--ink); color: var(--paper);
+  }
+  .btn-primary:hover { background: var(--amber); border-color: var(--amber); color: var(--paper); }
+
+  .codeblock {
+    background: var(--ink); color: var(--paper);
+    border-radius: 6px; padding: 18px 20px;
+    font-family: "JetBrains Mono", monospace; font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .codeblock .cmd { color: var(--amber-soft); }
+  .codeblock .ok { color: #b8d4be; }
+  .codeblock .warn { color: #e8a86b; }
+  .codeblock .dim { color: #8a8472; }
+  .codeblock .hl { color: var(--paper); }
+
+  .card {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card:hover { border-color: var(--ink-3); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(36,31,32,0.06); }
+  .card.active { border-color: var(--ink); background: var(--paper); box-shadow: 0 1px 0 var(--ink); transform: none; }
+
+
+  .stickynav {
+    position: fixed; top: 50%; right: 24px; transform: translateY(-50%);
+    z-index: 50;
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 14px 10px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .stickynav a {
+    width: 24px; height: 2px; background: var(--ink-faint); display: block;
+    transition: all 0.2s ease;
+  }
+  .stickynav a:hover, .stickynav a.active { width: 40px; background: var(--amber); }
+  @media (max-width: 1100px) { .stickynav { display: none; } }
+
+  .tab {
+    padding: 10px 18px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .tab:hover { color: var(--ink); border-color: var(--ink-3); }
+  .tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  a.tlink { color: var(--amber); border-bottom: 1px dashed var(--amber-2); }
+  a.tlink:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  .reveal { opacity: 0; transform: translateY(12px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.show { opacity: 1; transform: none; }
+
+  /* Staggered layer rows — each row slides in with increasing delay */
+  .reveal.show .layer-row { opacity: 0; animation: layerSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .reveal.show .layer-row:nth-child(1) { animation-delay: 0.05s; }
+  .reveal.show .layer-row:nth-child(2) { animation-delay: 0.10s; }
+  .reveal.show .layer-row:nth-child(3) { animation-delay: 0.15s; }
+  .reveal.show .layer-row:nth-child(4) { animation-delay: 0.20s; }
+  .reveal.show .layer-row:nth-child(5) { animation-delay: 0.25s; }
+  .reveal.show .layer-row:nth-child(6) { animation-delay: 0.30s; }
+  .reveal.show .layer-row:nth-child(7) { animation-delay: 0.35s; }
+  .reveal.show .layer-row:nth-child(8) { animation-delay: 0.40s; }
+  @keyframes layerSlideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: none; }
+  }
+
+
+  .codeblock::-webkit-scrollbar { height: 6px; }
+  .codeblock::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+  /* Layer pyramid */
+  .layer-row {
+    display: flex; align-items: center;
+    padding: 10px 14px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    margin-bottom: 4px;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    font-size: 13px;
+  }
+  .layer-row:hover { border-color: var(--amber); background: var(--paper); }
+  .layer-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px;
+    background: var(--ink); color: var(--paper);
+    border-radius: 999px;
+    font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 600;
+    margin-right: 14px;
+    flex-shrink: 0;
+  }
+
+  /* Checkpoint flow */
+  .checkpoint {
+    position: relative;
+    padding-left: 28px;
+    padding-bottom: 32px;
+    border-left: 2px solid var(--line);
+  }
+  .checkpoint:last-child { border-left: 2px solid transparent; padding-bottom: 0; }
+  .checkpoint::before {
+    content: "";
+    position: absolute;
+    left: -8px; top: 4px;
+    width: 14px; height: 14px;
+    border-radius: 999px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+  }
+  .checkpoint.gate::before { background: var(--amber); border-color: var(--amber); }
+
+  /* Diagonal stripe for "before/after" */
+  .stripe-old {
+    background-image: repeating-linear-gradient(135deg, var(--paper-2), var(--paper-2) 8px, var(--paper-3) 8px, var(--paper-3) 9px);
+  }
+
+  /* Asymmetric drop */
+  .drop {
+    width: 9px; height: 9px;
+    background: var(--amber);
+    transform: rotate(45deg);
+    display: inline-block;
+  }
+
+  /* Checkpoint dot scale-in */
+  .reveal.show .checkpoint::before {
+    animation: dotBounceIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .reveal.show .checkpoint:nth-child(1)::before { animation-delay: 0.05s; }
+  .reveal.show .checkpoint:nth-child(2)::before { animation-delay: 0.10s; }
+  .reveal.show .checkpoint:nth-child(3)::before { animation-delay: 0.15s; }
+  .reveal.show .checkpoint:nth-child(4)::before { animation-delay: 0.20s; }
+  .reveal.show .checkpoint:nth-child(5)::before { animation-delay: 0.25s; }
+  .reveal.show .checkpoint:nth-child(6)::before { animation-delay: 0.30s; }
+  .reveal.show .checkpoint:nth-child(7)::before { animation-delay: 0.35s; }
+  .reveal.show .checkpoint:nth-child(8)::before { animation-delay: 0.40s; }
+  .reveal.show .checkpoint:nth-child(9)::before { animation-delay: 0.45s; }
+  .reveal.show .checkpoint:nth-child(10)::before { animation-delay: 0.50s; }
+  .reveal.show .checkpoint.gate::before {
+    animation: dotBounceInGate 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  @keyframes dotBounceIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes dotBounceInGate {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Tab content flip-in */
+  @keyframes tabFlipIn {
+    from { opacity: 0; transform: perspective(800px) rotateY(-3deg) translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  .tab-content-enter {
+    animation: tabFlipIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Walkthrough artifact slide-in */
+  @keyframes artifactEnter {
+    from { opacity: 0; transform: translateX(-16px); }
+    to { opacity: 1; transform: none; }
+  }
+  .walkthrough-enter {
+    animation: artifactEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* FAQ underline draw */
+  .faq-active-q::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--amber);
+    margin-top: 6px;
+    transform-origin: left;
+    animation: underlineDraw 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes underlineDraw {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  /* Walkthrough progress bar */
+  .progress-dot {
+    width: 12px; height: 12px; border-radius: 999px;
+    border: 2px solid var(--line);
+    background: var(--paper);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .progress-dot.done { background: var(--ink); border-color: var(--ink); }
+  .progress-dot.current { background: var(--amber); border-color: var(--amber); transform: scale(1.3); }
+  .progress-dot.gate-dot { border-radius: 2px; transform: rotate(45deg); }
+  .progress-dot.gate-dot.done { background: var(--ink); border-color: var(--ink); transform: rotate(45deg); }
+  .progress-dot.gate-dot.current { background: var(--amber); border-color: var(--amber); transform: rotate(45deg) scale(1.3); }
+  .progress-line {
+    flex: 1; height: 2px; background: var(--line);
+  }
+  .progress-line.done { background: var(--ink); }
+
+  /* Hero drift-and-converge animation */
+  @keyframes heroDriftIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes heroCardDrift {
+    0% { opacity: 0; transform: var(--drift-from); }
+    100% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+  }
+  @keyframes heroConnectorDraw {
+    0% { stroke-dashoffset: 200; opacity: 0; }
+    30% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 1; }
+  }
+  @keyframes heroPulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.95); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+  }
+  @keyframes heroLabelFade {
+    0% { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: none; }
+  }
+  .hero-visual {
+    animation: heroDriftIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  }
+  .hero-card {
+    animation: heroCardDrift 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-card-1 { --drift-from: translate(-30px, 20px) rotate(-6deg); animation-delay: 0.15s; }
+  .hero-card-2 { --drift-from: translate(25px, -25px) rotate(5deg); animation-delay: 0.25s; }
+  .hero-card-3 { --drift-from: translate(-20px, -30px) rotate(-4deg); animation-delay: 0.35s; }
+  .hero-connector {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: heroConnectorDraw 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+  }
+  .hero-center-pulse {
+    animation: heroPulse 3s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+  .hero-label {
+    animation: heroLabelFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-label-1 { animation-delay: 0.25s; }
+  .hero-label-2 { animation-delay: 0.35s; }
+  .hero-label-3 { animation-delay: 0.45s; }
+  .hero-label-center { animation-delay: 0.65s; }
+
+  @media (max-width: 767px) {
+    .hero-visual-container { display: none; }
+  }
+
+  /* Role selector animations */
+  @keyframes roleSelectorEntry {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes roleGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(184,90,31,0.0); }
+    50% { box-shadow: 0 0 16px 4px rgba(19,62,248,0.10); }
+  }
+  @keyframes rolePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+  .role-selector {
+    animation: roleSelectorEntry 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  }
+  .role-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 16px 20px;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    min-width: 130px;
+    text-align: center;
+    animation: roleGlow 2.5s ease-in-out infinite, rolePulse 3s ease-in-out infinite;
+  }
+  .role-btn:hover {
+    border-color: var(--amber);
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(19,62,248,0.12);
+    animation: none;
+  }
+  .role-btn.selected {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    animation: none;
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(36,31,32,0.12);
+  }
+  .role-btn.dimmed {
+    opacity: 0.5;
+    animation: none;
+    transform: scale(0.97);
+  }
+  .role-btn.dimmed:hover {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+
+  /* Progressive reveal skeleton shimmer */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes sectionFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .section-skeleton {
+    height: 120px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--paper-2) 25%, var(--paper-3) 50%, var(--paper-2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+  .section-enter {
+    animation: sectionFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Terminal line stagger */
+  @keyframes termLineIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+  .term-line-stagger > div {
+    opacity: 0;
+    animation: termLineIn 0.2s ease forwards;
+  }
+
+  /* Active command dot pulse */
+  @keyframes cmdDotPulse {
+    0%, 100% { r: 14; opacity: 1; }
+    50% { r: 18; opacity: 0.3; }
+  }
+  .cmd-dot-pulse {
+    animation: cmdDotPulse 2s ease-in-out infinite;
+  }
+
+  /* SVG path draw-in animation */
+  @keyframes svgPathDraw {
+    from { stroke-dashoffset: var(--path-length, 200); opacity: 0; }
+    10% { opacity: 1; }
+    to { stroke-dashoffset: 0; opacity: 1; }
+  }
+  .reveal.show .svg-draw-path {
+    stroke-dasharray: var(--path-length, 200);
+    stroke-dashoffset: var(--path-length, 200);
+    animation: svgPathDraw 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .reveal.show .svg-draw-path:nth-child(1) { animation-delay: 0.2s; }
+  .reveal.show .svg-draw-path:nth-child(2) { animation-delay: 0.35s; }
+  .reveal.show .svg-draw-path:nth-child(3) { animation-delay: 0.5s; }
+
+  /* FAQ smooth height transition */
+  .faq-answer {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    opacity: 0;
+  }
+  .faq-answer.open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .faq-answer > div {
+    overflow: hidden;
+  }
+
+  @media print {
+    .stickynav { display: none; }
+  }
+</style>
+</head>
+<body class="min-h-screen">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+/* ===========================================================
+   DATA
+=========================================================== */
+
+const NAV = [
+  { id: "open", label: "Opening" },
+  { id: "what", label: "What is SDD" },
+  { id: "platform", label: "Quick context" },
+  { id: "today", label: "How we work today" },
+  { id: "tomorrow", label: "How we'll work" },
+  { id: "commands", label: "The 6 commands" },
+  { id: "checkpoints", label: "Checkpoints" },
+  { id: "walkthrough", label: "Walkthrough" },
+  { id: "roles", label: "Your role" },
+  { id: "faq", label: "FAQ" },
+  { id: "more", label: "Resources" }
+];
+
+const LAYERS = [
+  { n: 6, name: "Presentation", desc: "Web apps, mobile clients, and public APIs — how users interact with the system", group: "interface" },
+  { n: 5, name: "Application services", desc: "Business workflows, orchestration, and domain logic", group: "core" },
+  { n: 4, name: "Integrations", desc: "External systems, messaging, payments, and third-party adapters", group: "core" },
+  { n: 3, name: "Data access", desc: "Databases, caches, object storage, and persistence clients", group: "data" },
+  { n: 2, name: "Shared contracts", desc: "API schemas, event types, and cross-service interfaces", group: "data" },
+  { n: 1, name: "Foundation", desc: "Logging, auth, configuration, and shared libraries", group: "data" }
+];
+
+const ROLES = [
+  {
+    id: "ba",
+    label: "Business Analyst",
+    sub: "You translate business intent into something the team can build",
+    summary: "Your Jira story is the start, not the end. After refinement, you open Claude Code and run /speckit.specify yourself — turning your story into a structured spec that lives next to the code and cannot drift away from it.",
+    owns: [
+      "Drafting the user story and acceptance criteria in Jira (unchanged)",
+      "Running /speckit.specify in Claude Code to generate the spec from your story",
+      "Co-leading the refinement session where the spec gets shaped",
+      "Answering clarification questions when the AI flags ambiguity"
+    ],
+    handsOver: [
+      "A Jira story → into the refinement session",
+      "A spec.md draft (generated via Claude Code) → for engineer and PO review",
+      "Approved spec → engineer can begin /speckit.plan"
+    ],
+    keepDoing: [
+      "Stakeholder interviews", "Edge-case hunting",
+      "Business-rule arbitration", "Domain modelling"
+    ],
+    reallyChanges: "Where requirements live — and who creates them. They move from Confluence/Jira description fields into a versioned spec.md file in the feature branch. You run /speckit.specify in Claude Code to draft the spec, then refine it with the team and review it in GitLab."
+  },
+  {
+    id: "po",
+    label: "Product Owner",
+    sub: "You decide what gets built and in what order",
+    summary: "Refinement and sprint planning still happen. The new artifact is a spec MR you approve before development starts. Pivots become much cheaper — change the spec, regenerate the plan in an afternoon.",
+    owns: [
+      "Backlog priority and business-value sign-off",
+      "Approving spec MRs before the engineer commits the team's time to /speckit.plan",
+      "Final acceptance when the feature merges to main"
+    ],
+    handsOver: [
+      "Prioritized epic / story → to the BA",
+      "Scope sign-off → to the engineering team",
+      "Accepted feature → back to operations"
+    ],
+    keepDoing: [
+      "Roadmap", "Stakeholder alignment",
+      "Trade-off decisions", "Business-case ownership"
+    ],
+    reallyChanges: "Pivots get cheaper. Today, changing your mind two weeks in costs a sprint. Once a feature has a spec, changing it costs an afternoon: edit the spec, the engineer re-runs /speckit.plan, you see the impact on the plan before any code moves."
+  },
+  {
+    id: "ux",
+    label: "UI / UX Designer",
+    sub: "You shape what the user sees and how flows feel",
+    summary: "Designs ready before the story is written — that part stays. The new bit: for frontend features, you run /speckit.specify in Claude Code yourself, turning your design files (Figma or Claude Design) into a structured spec. The AI uses your designs as a contract when it generates UI tasks. Drift between design and code becomes harder.",
+    owns: [
+      "Discovery, prototyping, design reviews (unchanged)",
+      "Running /speckit.specify in Claude Code for frontend features",
+      "Producing reference designs that get linked into the spec",
+      "Joining refinement sessions to ensure flows are captured in acceptance criteria"
+    ],
+    handsOver: [
+      "Design files (Figma / Claude Design) + interaction notes → linked from spec.md",
+      "A spec.md draft (for frontend features, generated via Claude Code) → for engineer review",
+      "Visual acceptance → testable criteria the engineer verifies against"
+    ],
+    keepDoing: [
+      "Discovery and prototyping", "Design system stewardship",
+      "Accessibility", "Design reviews with stakeholders"
+    ],
+    reallyChanges: "Designs become structurally part of the spec, not a parallel artifact. The AI-generated plan references specific design files (Figma or Claude Design), so when you change a design, the change is visible in the plan and tasks. No more shipped UI that nobody noticed drifted from the latest design."
+  },
+  {
+    id: "eng",
+    label: "Engineer (incl. Tech leads)",
+    sub: "You design and build — and now also drive the AI through the work",
+    summary: "The slash commands run in your IDE inside Claude Code, in the feature repo. You drive them. You approve every step. The spec and the plan become artifacts you defend in review — you do not just translate them into code, you shape what the AI generates and push back when it over-engineers.",
+    owns: [
+      "Running /speckit.plan with the right tech-stack constraints",
+      "Validating the plan against the constitution and the layer model",
+      "Reviewing tasks.md before /speckit.implement runs",
+      "Code-reviewing each commit the AI makes",
+      "(Tech leads) reviewing specs that touch their domain"
+    ],
+    handsOver: [
+      "Constitution-compliant plan.md → for Software architect review when cross-cutting",
+      "Implementation MR → for code review by a peer",
+      "Operational learnings → feed back into the next spec"
+    ],
+    keepDoing: [
+      "Architectural decisions", "Domain ownership (Tech leads)",
+      "Code review judgment", "Production observability"
+    ],
+    reallyChanges: "Less translation work, more architecture and review. The AI handles the generation; your job is to know when it is wrong, when it is over-eager, and when the constitution is being bent."
+  },
+  {
+    id: "sa",
+    label: "Software architect",
+    sub: "You own the cross-cutting picture and the rules that hold it together",
+    summary: "ADRs and cross-cutting refinement stay yours. The new bit is the constitution — a small, immutable rule set in the repo that the AI must respect when generating any plan. Your design decisions get encoded once and enforced automatically on every feature.",
+    owns: [
+      "The constitution (memory/constitution.md) — amendments need an MR with rationale",
+      "Cross-cutting refinement and architecture review",
+      "Reviewing plans for features that touch multiple agents/layers",
+      "ADRs (unchanged)"
+    ],
+    handsOver: [
+      "Constitution rules → enforced in CI on every plan",
+      "ADRs → referenced from plans that depend on them",
+      "architecture review approvals → unblock cross-cutting plans"
+    ],
+    keepDoing: [
+      "ADR ownership", "Cross-cutting design",
+      "Reference architecture", "Architectural risk management"
+    ],
+    reallyChanges: "Your principles get teeth. Today an architectural rule is documented in an ADR and people remember it most of the time. Tomorrow it is encoded as a constitution gate that fails CI when violated. You spend less time policing, more time deciding."
+  }
+];
+
+const COMMANDS = [
+  {
+    id: "constitution",
+    cmd: "/speckit.constitution",
+    owner: "Software architect",
+    when: "Once when adopting SDD, then on amendments",
+    output: "memory/constitution.md",
+    desc: "Encodes the architectural rules every feature must respect: layer dependencies, approved integration patterns, shared contract boundaries, tenant isolation, conventional commits. Defined once, enforced on every plan."
+  },
+  {
+    id: "specify",
+    cmd: "/speckit.specify",
+    owner: "BA (or UI/UX for frontend features)",
+    when: "Start of every feature, after refinement",
+    output: "specs/NNN-feature/spec.md + a feature branch",
+    desc: "BA pastes the Jira story and refinement notes (or UI/UX pastes designs for frontend features). The AI drafts a structured spec and flags every ambiguity as NEEDS CLARIFICATION — nothing gets silently assumed."
+  },
+  {
+    id: "clarify",
+    cmd: "/speckit.clarify",
+    owner: "BA drives (or UI/UX for frontend) — PO / Engineer answer",
+    when: "Right after specify, before plan",
+    output: "Resolved Clarifications section in spec.md",
+    desc: "Walks through every open question in order. The BA brings the answers back from the team. No NEEDS CLARIFICATION markers may survive into the plan."
+  },
+  {
+    id: "plan",
+    cmd: "/speckit.plan",
+    owner: "Engineer (with Tech lead / Software architect on cross-cutting)",
+    when: "After the spec MR is approved",
+    output: "plan.md, research.md, data-model.md, contracts/",
+    desc: "Translates the spec into technical architecture, checking each constitution gate. Cross-cutting plans go through architecture review; domain-only plans go to the Tech lead. The output is concrete enough to estimate."
+  },
+  {
+    id: "tasks",
+    cmd: "/speckit.tasks",
+    owner: "Engineer",
+    when: "After the plan is approved",
+    output: "tasks.md (ordered, parallel-safe items marked [P])",
+    desc: "Decomposes the plan into ordered tasks with tests before implementation. The team reviews ordering in stand-up. Estimates can be pushed back into Jira if useful."
+  },
+  {
+    id: "implement",
+    cmd: "/speckit.implement",
+    owner: "Engineer (AI-assisted, human in the loop)",
+    when: "After tasks are reviewed",
+    output: "Working code, tests, passing CI",
+    desc: "Executes tasks in order with TDD enforced — tests fail first, then implementation passes them. The engineer reviews each commit. MR moves from Draft to Ready when CI is green."
+  }
+];
+
+const WALKTHROUGH = [
+  {
+    phase: "Refinement",
+    actor: "BA + PO + Engineer + UX (refinement session)",
+    title: "Story refined in team session",
+    desc: "BA brings the Jira story. UX brings the linked Figma frames. The team walks through acceptance criteria, edge cases, and what 'done' means. This is the meeting you already run.",
+    artifact: {
+      type: "story",
+      title: "PROJ-2841 — SMS confirmation on order shipment",
+      role: "As a customer",
+      want: "I want to receive an SMS when my order ships",
+      so: "so I have shipment confirmation on my phone",
+      ac: [
+        "SMS sent within 60s of order shipment",
+        "Sent only when phone number is on file",
+        "Falls back to email if SMS fails",
+        "Localized DE/EN per customer preference"
+      ]
+    },
+    note: "Nothing new yet. This is your current refinement format."
+  },
+  {
+    phase: "Spec generation",
+    actor: "BA (or UI/UX for frontend features) driving Claude Code",
+    title: "/speckit.specify in the repo",
+    desc: "After the refinement, the BA opens Claude Code in the relevant repo and runs the command, pasting the story and the refinement notes. For frontend features, the UI/UX designer drives instead. The AI drafts a structured spec on a new feature branch.",
+    artifact: {
+      type: "term",
+      lines: [
+        ["dim", "$ BA opens Claude Code in the relevant repo"],
+        ["cmd", "/speckit.specify  Story PROJ-2841: send an SMS confirmation when an order ships via the messaging service. Send to the customer phone on record. Do not block order shipment if SMS fails. Designs in Figma file: \"Closure notifications v3\""],
+        ["", ""],
+        ["dim", "→ Detected next feature number: 042"],
+        ["dim", "→ Created branch "],
+        ["hl", "042-order-shipment-sms"],
+        ["dim", "→ Drafted "],
+        ["ok", "specs/042-order-shipment-sms/spec.md"],
+        ["", ""],
+        ["warn", "⚠  4 NEEDS CLARIFICATION markers in spec.md:"],
+        ["dim", "   · Which tenants is this enabled for? (all / specific?)"],
+        ["dim", "   · Locale fallback if customer.preferred_locale missing?"],
+        ["dim", "   · Retry policy on SMS provider 5xx?"],
+        ["dim", "   · Should support staff be alerted on double failure?"],
+        ["", ""],
+        ["ok", "✓ Draft MR opened: !1287"]
+      ]
+    },
+    note: "The AI never invents an answer to an ambiguous question. It marks it and moves on."
+  },
+  {
+    phase: "Clarify",
+    actor: "BA brings questions to PO / Engineer / UX",
+    title: "/speckit.clarify resolves the unknowns",
+    desc: "The BA takes the four open questions back to the team. Same conversation as a refinement follow-up — nothing exotic. Each answer is committed to the spec.",
+    artifact: {
+      type: "qa",
+      pairs: [
+        ["Which tenants?", "Demo and tenant-beta. Behind a feature flag."],
+        ["Locale fallback?", "Default to the tenant's primary locale."],
+        ["Retry policy?", "Two retries with backoff, then fall back to email."],
+        ["Support alert on double failure?", "No. Log to order history. Operations dashboard already surfaces it."]
+      ]
+    },
+    note: "If the team needs an external decision (e.g. legal review on retention), the engineer pauses and pings the right person. The spec waits."
+  },
+  {
+    phase: "Spec review",
+    actor: "PO + Tech lead (or software architect if cross-cutting)",
+    title: "Spec MR reviewed and approved",
+    desc: "The Draft MR moves to Ready. The PO reviews for business-value alignment. Because this feature touches application services and notification integrations, the relevant tech lead reviews. If it spanned more domains, the software architect would step in via cross-cutting refinement.",
+    artifact: {
+      type: "mr",
+      title: "MR !1287 — feat(042): spec — SMS on order shipment",
+      reviewers: ["PO", "Tech lead"],
+      checks: [
+        "All NEEDS CLARIFICATION resolved",
+        "Acceptance criteria testable",
+        "Linked Figma frames present",
+        "Cross-cutting? No (single domain)"
+      ]
+    },
+    note: "Approval here is a real checkpoint. It says: we agree what we are building."
+  },
+  {
+    phase: "Plan",
+    actor: "Engineer + tech lead review",
+    title: "/speckit.plan generates the technical design",
+    desc: "Engineer adds the tech-stack constraints (reuse the existing notification-service-client, no new abstractions). The AI applies the constitution gates and produces a plan. The engineer rejects the first draft because the AI tries to introduce a new caching layer that nobody asked for.",
+    artifact: {
+      type: "term",
+      lines: [
+        ["dim", "$ "],
+        ["cmd", "/speckit.plan  Use existing notification-service-client from contracts/notification-service-contracts. Trigger from workflow handler on order_status==SHIPPED. Tenant config via tenant-configuration-client (S3). Reuse SendNotificationRequest contract — no new abstractions."],
+        ["", ""],
+        ["dim", "→ Reading specs/042-order-shipment-sms/spec.md"],
+        ["dim", "→ Loading memory/constitution.md"],
+        ["dim", "→ Simplicity gate (Article VII): "], ["ok", "  PASS — 0 new projects"],
+        ["dim", "→ Anti-abstraction gate (Article VIII): "], ["ok", "  PASS — using framework directly"],
+        ["dim", "→ Layer-dependency gate: "], ["ok", "  PASS — no upward dependencies"],
+        ["dim", "→ Multi-tenancy gate: "], ["ok", "  PASS — tenant-scoped via existing client"],
+        ["", ""],
+        ["ok", "✓ Generated plan.md, research.md, data-model.md, contracts/"]
+      ]
+    },
+    note: "If a gate had failed, the AI would stop and ask for either a fix or an explicit waiver with rationale. Waivers are visible in the MR — no silent rule-breaking."
+  },
+  {
+    phase: "Tasks",
+    actor: "Engineer (team sanity-checks ordering)",
+    title: "/speckit.tasks decomposes the plan",
+    desc: "The plan is broken into ordered, dependency-aware tasks. Items that can run in parallel are marked [P]. The team glances at the ordering in the next stand-up and tweaks two items.",
+    artifact: {
+      type: "tasks",
+      items: [
+        ["T001", "[P]", "Add shipment_sms_template to contracts/notification-service-contracts (schema)"],
+        ["T002", "", "Write contract test for shipment SMS SendNotificationRequest (must fail first)"],
+        ["T003", "", "Update services/order-service/src/workflow/handler.py with shipment handler"],
+        ["T004", "[P]", "Update tenant config schema in config/tenant-configuration-contracts"],
+        ["T005", "", "Integration test against SMS provider sandbox (per-tenant token via SSM)"],
+        ["T006", "", "Add structured logging for SMS send / fallback events"],
+        ["T007", "[P]", "Update tenant YAML in S3 for demo and tenant-beta"]
+      ]
+    },
+    note: "tasks.md can be synced to Jira sub-tasks if the team wants them visible there. Optional."
+  },
+  {
+    phase: "Implement",
+    actor: "Engineer (AI-assisted)",
+    title: "/speckit.implement walks the tasks",
+    desc: "The AI executes tasks in order. TDD enforced — tests fail first, then implementation passes them. The engineer reviews each commit. Once during implementation the AI tries to add a metric that wasn't asked for; the engineer rejects the commit.",
+    artifact: {
+      type: "term",
+      lines: [
+        ["dim", "$ "],
+        ["cmd", "/speckit.implement"],
+        ["", ""],
+        ["dim", "→ T001 [P] Adding shipment_sms_template..."],
+        ["ok", "  ✓ commit: feat(042): add shipment_sms_template to contracts"],
+        ["dim", "→ T002 Writing contract test (red phase)..."],
+        ["warn", "  ✗ test failing as expected"],
+        ["dim", "→ T003 Implementing shipment handler..."],
+        ["ok", "  ✓ test now passing (green phase)"],
+        ["ok", "  ✓ commit: feat(042): wire shipment handler"],
+        ["dim", "→ T004 [P] ..."],
+        ["dim", "→ ..."],
+        ["", ""],
+        ["ok", "✓ All tasks complete. CI green. MR ready for review."]
+      ]
+    },
+    note: "Nothing auto-merges. Every step is reviewable. The engineer can pause, intervene, or roll back at any point."
+  },
+  {
+    phase: "Review & merge",
+    actor: "Peer engineer + tech lead",
+    title: "Code review, architecture review if cross-cutting, merge",
+    desc: "The implementation MR gets a normal code review. CI runs all gates. Squash-merge to main. Your CI/CD pipeline deploys the change through your usual environments.",
+    artifact: {
+      type: "mr",
+      title: "MR !1287 — feat(042): SMS on order shipment",
+      reviewers: ["Engineer peer", "Tech lead"],
+      checks: [
+        "Constitution gates green in CI",
+        "All tests pass",
+        "Conventional commits respected",
+        "Squash & merge approved"
+      ]
+    },
+    note: "This is your existing review process. SDD did not change it."
+  },
+  {
+    phase: "Test & operate",
+    actor: "Test team + Operations",
+    title: "Done — but the spec lives on",
+    desc: "Test team runs the standard suite plus the new acceptance scenarios. Operations watches metrics. Six months from now when somebody asks 'why does it SMS twice on retry?' the answer is in spec.md, not lost.",
+    artifact: null,
+    note: "The spec is now part of the codebase forever. It does not rot."
+  }
+];
+
+const CHECKPOINTS = [
+  { stage: "Refinement session", who: "BA + PO + Engineer + UX", out: "Refined Jira story, agreed acceptance criteria", gate: false },
+  { stage: "Spec generation", who: "BA (or UI/UX) in Claude Code", out: "spec.md + Draft MR + branch", gate: false },
+  { stage: "Clarification", who: "BA ↔ PO / Engineer / UX", out: "All ambiguity resolved in spec.md", gate: false },
+  { stage: "Spec MR review", who: "PO + Tech lead (or software architect if cross-cutting)", out: "Approved spec — green light to plan", gate: true },
+  { stage: "Plan generation", who: "Engineer in Claude Code", out: "plan.md + contracts/ + data-model", gate: false },
+  { stage: "Plan review", who: "Tech lead (or software architect if cross-cutting)", out: "Approved technical design", gate: true },
+  { stage: "Task generation", who: "Engineer", out: "Ordered tasks.md", gate: false },
+  { stage: "Implementation", who: "Engineer (AI-assisted)", out: "Working code with passing tests", gate: false },
+  { stage: "Code review", who: "Peer engineer + tech lead", out: "Approved MR", gate: true },
+  { stage: "Test & merge", who: "Test team + Engineer", out: "Merged to main, deployed via your CI/CD pipeline", gate: true }
+];
+
+const TOMORROW_FLOW = [
+  { step: "Story written", who: "BA (with PO)", artifact: "Jira story", same: true },
+  { step: "Refinement", who: "BA + PO + Engineer (+ UX)", artifact: "Refined story, AC agreed", same: true },
+  { step: "Spec generation", who: "BA (or UI/UX) in Claude Code", artifact: "spec.md (drafted by AI)", same: false, badge: "NEW" },
+  { step: "Clarification", who: "BA ↔ PO / Engineer / UX", artifact: "spec.md fully resolved", same: false, badge: "NEW" },
+  { step: "Spec MR review", who: "PO + tech lead", artifact: "Approved spec.md", same: false, badge: "GATE" },
+  { step: "Plan generation", who: "Engineer in Claude Code", artifact: "plan.md + contracts/", same: false, badge: "NEW" },
+  { step: "Plan / architecture review", who: "Tech lead / software architect if cross-cutting", artifact: "Approved plan", same: false, badge: "GATE" },
+  { step: "Sprint planning", who: "Team", artifact: "Tasks → estimates → sprint", same: true },
+  { step: "Implementation", who: "Engineer (AI-assisted)", artifact: "Code in feature branch", same: false, badge: "CHANGED" },
+  { step: "Code review", who: "Peer engineer + tech lead", artifact: "Approved MR", same: true },
+  { step: "Test", who: "Test team", artifact: "Pass / fail", same: true },
+  { step: "Done", who: "—", artifact: "Merged main, deployed", same: true }
+];
+
+/* ===========================================================
+   HOOKS
+=========================================================== */
+
+function useReveal() {
+  useEffect(() => {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("show"); });
+    }, { threshold: 0.08 });
+    const scan = () => document.querySelectorAll(".reveal:not(.show)").forEach(el => io.observe(el));
+    scan();
+    const mo = new MutationObserver(scan);
+    mo.observe(document.body, { childList: true, subtree: true });
+    return () => { io.disconnect(); mo.disconnect(); };
+  }, []);
+}
+
+function useActiveSection(ids) {
+  const [active, setActive] = useState(ids[0]);
+  useEffect(() => {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    ids.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+    return () => obs.disconnect();
+  }, [ids]);
+  return active;
+}
+
+/* ===========================================================
+   COMPONENTS
+=========================================================== */
+
+/* Inline code formatter — wraps /speckit.* and spec.md / plan.md / tasks.md in code font */
+const Fmt = ({ children }) => {
+  if (typeof children !== "string") return children;
+  const parts = children.split(/(\/speckit\.\w+|spec\.md|plan\.md|tasks\.md|constitution\.md)/g);
+  return parts.map((p, i) =>
+    /^\/speckit\.|\.md$/.test(p)
+      ? <code key={i} className="mono text-amber" style={{ fontSize: "0.9em" }}>{p}</code>
+      : p
+  );
+};
+
+const Eyebrow = ({ children, color }) => (
+  <div className="mono text-xs uppercase tracking-[0.18em]" style={{ color: color || "var(--ink-3)" }}>{children}</div>
+);
+
+const Section = ({ id, eyebrow, title, lede, children, className = "", wide = false }) => (
+  <section id={id} className={`relative ruled ${className}`}>
+    <div className={`${wide ? "max-w-screen-xl" : "max-w-5xl"} mx-auto px-6 md:px-10 py-16 md:py-24 relative`}>
+      <div className="relative z-10">
+        {eyebrow && <div className="reveal mb-5"><Eyebrow>{eyebrow}</Eyebrow></div>}
+        {title && (
+          <h2 className="display-tight text-2xl md:text-4xl text-ink leading-[1.1] mb-6 reveal" style={{ maxWidth: "28ch" }}>
+            {title}
+          </h2>
+        )}
+        {lede && <p className="text-ink-2 text-base md:text-lg leading-relaxed mb-12 reveal" style={{ maxWidth: "60ch" }}>{lede}</p>}
+        {children}
+      </div>
+    </div>
+  </section>
+);
+
+/* ----- Hero Visual: Drift & Converge ----- */
+const HeroDriftConverge = () => {
+  // Card positions (center points) forming a triangle around the SPEC hub
+  const cx = 160, cy = 130;
+  const cards = [
+    { label: "Requirements", cx: 68, cy: 52, accent: "var(--amber)" },
+    { label: "Design", cx: 252, cy: 52, accent: "var(--sage)" },
+    { label: "Code", cx: 160, cy: 228, accent: "var(--ink)" },
+  ];
+  const cw = 56, ch = 56, cr = 5; // card size
+  return (
+    <div className="hero-visual" style={{ width: "100%", maxWidth: 380 }}>
+      <svg viewBox="0 0 320 290" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "auto" }}>
+        {/* Dashed connectors from cards to center hub */}
+        {cards.map((c, i) => (
+          <line key={`c${i}`} x1={c.cx} y1={c.cy} x2={cx} y2={cy}
+            stroke="var(--line)" strokeWidth="1.5" strokeDasharray="4 4"
+            className="hero-connector" style={{ animationDelay: `${1.3 + i * 0.1}s` }} />
+        ))}
+
+        {/* Center hub — pulsing ring + circle + SPEC label */}
+        <circle cx={cx} cy={cy} r="32" fill="none" stroke="var(--amber-soft)" strokeWidth="1" className="hero-center-pulse" />
+        <circle cx={cx} cy={cy} r="24" fill="var(--paper)" stroke="var(--amber)" strokeWidth="2"
+          className="hero-card" style={{ "--drift-from": "scale(0)", animationDelay: "0.45s" }} />
+        <text x={cx} y={cy + 1} textAnchor="middle" dominantBaseline="central"
+          fill="var(--amber)" style={{ fontFamily: "JetBrains Mono", fontSize: 10, fontWeight: 600 }}>SPEC</text>
+
+        {/* Card: Requirements — 3 horizontal lines */}
+        <g className="hero-card hero-card-1">
+          <rect x={cards[0].cx - cw/2} y={cards[0].cy - ch/2} width={cw} height={ch} rx={cr}
+            fill="var(--paper-2)" stroke={cards[0].accent} strokeWidth="1.5" />
+          <line x1={cards[0].cx - 14} y1={cards[0].cy - 10} x2={cards[0].cx + 14} y2={cards[0].cy - 10} stroke={cards[0].accent} strokeWidth="1.5" strokeLinecap="round" />
+          <line x1={cards[0].cx - 14} y1={cards[0].cy} x2={cards[0].cx + 14} y2={cards[0].cy} stroke={cards[0].accent} strokeWidth="1.5" strokeLinecap="round" />
+          <line x1={cards[0].cx - 14} y1={cards[0].cy + 10} x2={cards[0].cx + 6} y2={cards[0].cy + 10} stroke={cards[0].accent} strokeWidth="1.5" strokeLinecap="round" />
+        </g>
+
+        {/* Card: Design — hexagon/diamond shape */}
+        <g className="hero-card hero-card-2">
+          <rect x={cards[1].cx - cw/2} y={cards[1].cy - ch/2} width={cw} height={ch} rx={cr}
+            fill="var(--paper-2)" stroke={cards[1].accent} strokeWidth="1.5" />
+          <polygon points={`${cards[1].cx},${cards[1].cy - 14} ${cards[1].cx + 14},${cards[1].cy} ${cards[1].cx},${cards[1].cy + 14} ${cards[1].cx - 14},${cards[1].cy}`}
+            fill="none" stroke={cards[1].accent} strokeWidth="1.5" strokeLinejoin="round" />
+        </g>
+
+        {/* Card: Code — angle brackets */}
+        <g className="hero-card hero-card-3">
+          <rect x={cards[2].cx - cw/2} y={cards[2].cy - ch/2} width={cw} height={ch} rx={cr}
+            fill="var(--paper-2)" stroke={cards[2].accent} strokeWidth="1.5" />
+          <polyline points={`${cards[2].cx - 6},${cards[2].cy - 10} ${cards[2].cx - 16},${cards[2].cy} ${cards[2].cx - 6},${cards[2].cy + 10}`}
+            fill="none" stroke={cards[2].accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={`${cards[2].cx + 6},${cards[2].cy - 10} ${cards[2].cx + 16},${cards[2].cy} ${cards[2].cx + 6},${cards[2].cy + 10}`}
+            fill="none" stroke={cards[2].accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+
+        {/* Labels above/below cards */}
+        <text x={cards[0].cx} y={cards[0].cy - ch/2 - 10} textAnchor="middle" fill="var(--ink-3)" className="hero-label hero-label-1"
+          style={{ fontFamily: "Inter", fontSize: 11, fontWeight: 500 }}>Requirements</text>
+        <text x={cards[1].cx} y={cards[1].cy - ch/2 - 10} textAnchor="middle" fill="var(--ink-3)" className="hero-label hero-label-2"
+          style={{ fontFamily: "Inter", fontSize: 11, fontWeight: 500 }}>Design</text>
+        <text x={cards[2].cx} y={cards[2].cy + ch/2 + 18} textAnchor="middle" fill="var(--ink-3)" className="hero-label hero-label-3"
+          style={{ fontFamily: "Inter", fontSize: 11, fontWeight: 500 }}>Code</text>
+        <text x={cx} y={cy + 44} textAnchor="middle" fill="var(--amber)" className="hero-label hero-label-center"
+          style={{ fontFamily: "Inter", fontSize: 11, fontWeight: 600 }}>One source of truth</text>
+      </svg>
+    </div>
+  );
+};
+
+/* ===========================================================
+   DIAGRAMS
+=========================================================== */
+
+/* ----- SDD Pipeline Flow (Section 01) ----- */
+const PipelineFlow = () => {
+  return (
+    <div className="reveal mb-10 overflow-x-auto">
+      <svg viewBox="0 0 780 220" width="100%" style={{ maxWidth: 780, minWidth: 520 }} xmlns="http://www.w3.org/2000/svg">
+        {/* Central spine — the spec */}
+        <rect x="300" y="20" width="180" height="180" rx="12" fill="rgba(0,178,255,0.04)" stroke="var(--sage)" strokeWidth="2" />
+        <text x="390" y="50" textAnchor="middle" fill="var(--sage)" fontSize="13" fontFamily="JetBrains Mono, monospace" fontWeight="600">spec.md</text>
+        <text x="390" y="68" textAnchor="middle" fill="var(--ink-faint)" fontSize="9" fontFamily="Inter, sans-serif">single source of truth</text>
+
+        {/* Spec content preview */}
+        <rect x="320" y="80" width="140" height="8" rx="2" fill="var(--sage)" opacity="0.2" />
+        <rect x="320" y="94" width="110" height="6" rx="2" fill="var(--sage)" opacity="0.12" />
+        <rect x="320" y="106" width="130" height="6" rx="2" fill="var(--sage)" opacity="0.12" />
+        <rect x="320" y="118" width="90" height="6" rx="2" fill="var(--sage)" opacity="0.12" />
+        <rect x="320" y="136" width="140" height="8" rx="2" fill="var(--sage)" opacity="0.2" />
+        <rect x="320" y="150" width="100" height="6" rx="2" fill="var(--sage)" opacity="0.12" />
+        <rect x="320" y="162" width="120" height="6" rx="2" fill="var(--sage)" opacity="0.12" />
+
+        {/* Left: Inputs flowing IN */}
+        {/* Story input */}
+        <rect x="30" y="40" width="110" height="44" rx="6" fill="rgba(19,62,248,0.06)" stroke="var(--amber)" strokeWidth="1.5" />
+        <text x="85" y="60" textAnchor="middle" fill="var(--amber)" fontSize="10" fontFamily="JetBrains Mono, monospace" fontWeight="500">Jira Story</text>
+        <text x="85" y="75" textAnchor="middle" fill="var(--ink-faint)" fontSize="8" fontFamily="Inter, sans-serif">requirements</text>
+        <path d="M 145 62 C 200 62, 240 60, 295 80" stroke="var(--amber)" strokeWidth="1.5" fill="none" markerEnd="url(#pfArrow)" className="svg-draw-path" style={{ "--path-length": 180 }} />
+
+        {/* Design input */}
+        <rect x="30" y="110" width="110" height="44" rx="6" fill="rgba(19,62,248,0.06)" stroke="var(--amber)" strokeWidth="1.5" />
+        <text x="85" y="130" textAnchor="middle" fill="var(--amber)" fontSize="10" fontFamily="JetBrains Mono, monospace" fontWeight="500">Designs</text>
+        <text x="85" y="145" textAnchor="middle" fill="var(--ink-faint)" fontSize="8" fontFamily="Inter, sans-serif">Figma / Claude Design</text>
+        <path d="M 145 132 C 200 132, 240 125, 295 120" stroke="var(--amber)" strokeWidth="1.5" fill="none" markerEnd="url(#pfArrow)" className="svg-draw-path" style={{ "--path-length": 180 }} />
+
+        {/* Clarification input */}
+        <rect x="50" y="174" width="110" height="36" rx="6" fill="rgba(19,62,248,0.04)" stroke="var(--line)" strokeWidth="1" />
+        <text x="105" y="195" textAnchor="middle" fill="var(--ink-3)" fontSize="9" fontFamily="Inter, sans-serif">Clarification answers</text>
+        <path d="M 165 190 C 210 188, 250 170, 295 160" stroke="var(--line)" strokeWidth="1" fill="none" markerEnd="url(#pfArrowLight)" strokeDasharray="3 2" />
+
+        {/* Right: Outputs generated FROM spec */}
+        {/* Plan */}
+        <rect x="550" y="30" width="110" height="40" rx="6" fill="rgba(0,178,255,0.06)" stroke="var(--sage)" strokeWidth="1.5" />
+        <text x="605" y="50" textAnchor="middle" fill="var(--sage)" fontSize="10" fontFamily="JetBrains Mono, monospace" fontWeight="500">plan.md</text>
+        <text x="605" y="63" textAnchor="middle" fill="var(--ink-faint)" fontSize="8" fontFamily="Inter, sans-serif">architecture decisions</text>
+        <path d="M 485 60 C 510 50, 530 42, 545 45" stroke="var(--sage)" strokeWidth="1.5" fill="none" markerEnd="url(#pfArrowSage)" className="svg-draw-path" style={{ "--path-length": 80 }} />
+
+        {/* Tasks */}
+        <rect x="560" y="90" width="110" height="40" rx="6" fill="rgba(0,178,255,0.06)" stroke="var(--sage)" strokeWidth="1.5" />
+        <text x="615" y="110" textAnchor="middle" fill="var(--sage)" fontSize="10" fontFamily="JetBrains Mono, monospace" fontWeight="500">tasks.md</text>
+        <text x="615" y="123" textAnchor="middle" fill="var(--ink-faint)" fontSize="8" fontFamily="Inter, sans-serif">atomic work items</text>
+        <path d="M 485 110 C 520 108, 540 107, 555 108" stroke="var(--sage)" strokeWidth="1.5" fill="none" markerEnd="url(#pfArrowSage)" className="svg-draw-path" style={{ "--path-length": 80 }} />
+
+        {/* Code */}
+        <rect x="570" y="150" width="110" height="40" rx="6" fill="rgba(0,178,255,0.06)" stroke="var(--sage)" strokeWidth="1.5" />
+        <text x="625" y="170" textAnchor="middle" fill="var(--sage)" fontSize="10" fontFamily="JetBrains Mono, monospace" fontWeight="500">code</text>
+        <text x="625" y="183" textAnchor="middle" fill="var(--ink-faint)" fontSize="8" fontFamily="Inter, sans-serif">implementation</text>
+        <path d="M 485 155 C 520 158, 545 160, 565 165" stroke="var(--sage)" strokeWidth="1.5" fill="none" markerEnd="url(#pfArrowSage)" className="svg-draw-path" style={{ "--path-length": 100 }} />
+
+        {/* Gate markers */}
+        <rect x="488" y="38" width="4" height="140" rx="2" fill="var(--amber)" opacity="0.4" />
+        <text x="510" y="16" textAnchor="middle" fill="var(--amber)" fontSize="8" fontFamily="JetBrains Mono, monospace" fontWeight="600">GATES</text>
+        <text x="510" y="26" textAnchor="middle" fill="var(--ink-faint)" fontSize="7" fontFamily="Inter, sans-serif">human review</text>
+
+        {/* Defs */}
+        <defs>
+          <marker id="pfArrow" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+            <path d="M0,0 L7,2.5 L0,5" fill="none" stroke="var(--amber)" strokeWidth="1" />
+          </marker>
+          <marker id="pfArrowLight" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+            <path d="M0,0 L6,2 L0,4" fill="none" stroke="var(--line)" strokeWidth="0.8" />
+          </marker>
+          <marker id="pfArrowSage" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+            <path d="M0,0 L7,2.5 L0,5" fill="none" stroke="var(--sage)" strokeWidth="1" />
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  );
+};
+
+/* ----- Layer Dependency Pyramid (Section 02) ----- */
+const LayerPyramid = () => {
+  const layers = [
+    { n: 6, name: "Presentation", w: 52 },
+    { n: 5, name: "Application services", w: 60 },
+    { n: 4, name: "Integrations", w: 68 },
+    { n: 3, name: "Data access", w: 76 },
+    { n: 2, name: "Shared contracts", w: 84 },
+    { n: 1, name: "Foundation", w: 96 },
+  ];
+  const svgW = 400, svgH = 280, rowH = 30, startY = 12;
+  return (
+    <div className="reveal mb-6">
+      <svg viewBox={`0 0 ${svgW} ${svgH}`} width="100%" style={{ maxWidth: svgW }} xmlns="http://www.w3.org/2000/svg">
+        {layers.map((l, i) => {
+          const rw = (l.w / 100) * (svgW - 60);
+          const x = (svgW - rw) / 2;
+          const y = startY + i * (rowH + 4);
+          const fill = i < 1 ? "rgba(19,62,248,0.08)" : i < 3 ? "rgba(0,178,255,0.08)" : "rgba(36,31,32,0.04)";
+          return (
+            <g key={i}>
+              <rect x={x} y={y} width={rw} height={rowH} rx={3} fill={fill} stroke="var(--line)" strokeWidth={1} />
+              <text x={x + 10} y={y + 19} fill="var(--ink-3)" fontSize={10} fontFamily="JetBrains Mono, monospace" fontWeight={500}>L{l.n}</text>
+              <text x={x + 36} y={y + 19} fill="var(--ink-2)" fontSize={11} fontFamily="Inter, sans-serif">{l.name}</text>
+            </g>
+          );
+        })}
+        {/* Downward arrow */}
+        <path d={`M${svgW/2 + 80} ${startY + 20} L${svgW/2 + 80} ${startY + 7 * 34 + 10}`} stroke="var(--sage)" strokeWidth={1.5} strokeDasharray="4,3" markerEnd="url(#pyArrowDown)" />
+        <text x={svgW/2 + 90} y={startY + 4 * 34} fill="var(--sage)" fontSize={9} fontFamily="Inter, sans-serif">allowed</text>
+        {/* Forbidden upward arrow */}
+        <path d={`M${svgW/2 - 80} ${startY + 5 * 34 + 15} L${svgW/2 - 80} ${startY + 2 * 34 + 15}`} stroke="var(--rust)" strokeWidth={1.5} strokeDasharray="4,3" markerEnd="url(#pyArrowUp)" />
+        <text x={svgW/2 - 72} y={startY + 3.5 * 34 + 12} fill="var(--rust)" fontSize={9} fontFamily="Inter, sans-serif" fontWeight={500}>forbidden</text>
+        <line x1={svgW/2 - 88} y1={startY + 3 * 34 + 8} x2={svgW/2 - 72} y2={startY + 4 * 34 + 8} stroke="var(--rust)" strokeWidth={2} />
+        <line x1={svgW/2 - 72} y1={startY + 3 * 34 + 8} x2={svgW/2 - 88} y2={startY + 4 * 34 + 8} stroke="var(--rust)" strokeWidth={2} />
+        <defs>
+          <marker id="pyArrowDown" markerWidth="8" markerHeight="6" refX="4" refY="3" orient="auto">
+            <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--sage)" strokeWidth={1} />
+          </marker>
+          <marker id="pyArrowUp" markerWidth="8" markerHeight="6" refX="4" refY="3" orient="auto">
+            <path d="M0,0 L8,3 L0,6" fill="none" stroke="var(--rust)" strokeWidth={1} />
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  );
+};
+
+/* ----- Command Sequence Timeline (Section 04) ----- */
+const CommandTimeline = ({ active, onSelect }) => {
+  const cmds = [
+    { id: "constitution", short: "constitution", phase: "spec" },
+    { id: "specify", short: "specify", phase: "spec" },
+    { id: "clarify", short: "clarify", phase: "spec" },
+    { id: "plan", short: "plan", phase: "eng" },
+    { id: "tasks", short: "tasks", phase: "eng" },
+    { id: "implement", short: "implement", phase: "eng" },
+  ];
+  const dotR = 14, gap = 100, padX = 30;
+  const w = padX * 2 + cmds.length * dotR * 2 + (cmds.length - 1) * gap;
+  const topPad = 14; // space for phase labels
+  return (
+    <div className="reveal mb-8 overflow-x-auto">
+      <svg viewBox={`0 0 ${w} ${62 + topPad}`} width="100%" style={{ maxWidth: w, minWidth: 480 }} xmlns="http://www.w3.org/2000/svg">
+        {cmds.map((c, i) => {
+          const cx = padX + dotR + i * (dotR * 2 + gap);
+          const cy = 22 + topPad;
+          const isActive = active === c.id;
+          const isGate = i === 3 || i === 5;
+          const phaseColor = c.phase === "eng" ? "var(--sage)" : "var(--amber)";
+          return (
+            <g key={i} style={{ cursor: "pointer" }} onClick={() => onSelect(c.id)}>
+              {i > 0 && <line x1={cx - gap - dotR + 2} y1={cy} x2={cx - dotR - 2} y2={cy} stroke="var(--line)" strokeWidth={1.5} />}
+              {isGate && i > 0 && <text x={cx - gap/2 - dotR + 2} y={cy - 14} textAnchor="middle" fill="var(--amber)" fontSize={7} fontFamily="JetBrains Mono, monospace">GATE</text>}
+              {isActive && <circle cx={cx} cy={cy} r={dotR} fill="none" stroke={phaseColor} strokeWidth={1.5} className="cmd-dot-pulse" opacity={0.5} />}
+              <circle cx={cx} cy={cy} r={dotR} fill={isActive ? "var(--ink)" : "var(--paper-2)"} stroke={isActive ? "var(--ink)" : "var(--line)"} strokeWidth={1.5} />
+              <text x={cx} y={cy + 4} textAnchor="middle" fill={isActive ? "var(--paper)" : "var(--ink-3)"} fontSize={10} fontFamily="JetBrains Mono, monospace" fontWeight={600}>{i + 1}</text>
+              <text x={cx} y={cy + 30} textAnchor="middle" fill={isActive ? phaseColor : "var(--ink-3)"} fontSize={9} fontFamily="JetBrains Mono, monospace" fontWeight={isActive ? 600 : 400}>{c.short}</text>
+            </g>
+          );
+        })}
+        {/* Phase labels */}
+        <text x={padX + dotR + 1 * (dotR * 2 + gap)} y={10} textAnchor="middle" fill="var(--amber)" fontSize={8} fontFamily="Inter, sans-serif" opacity={0.6}>spec phase</text>
+        <text x={padX + dotR + 4 * (dotR * 2 + gap)} y={10} textAnchor="middle" fill="var(--sage)" fontSize={8} fontFamily="Inter, sans-serif" opacity={0.6}>implementation phase</text>
+      </svg>
+    </div>
+  );
+};
+
+
+/* ===========================================================
+   MOCK UI COMPONENTS (for non-engineer roles)
+=========================================================== */
+
+/* ----- Mock GitLab MR Screen ----- */
+/* ----- Browser Frame (Safari-style) ----- */
+const BrowserFrame = ({ url = "gitlab.example.com/platform/merge_requests/1287", children }) => (
+  <div className="w-full rounded-xl overflow-hidden" style={{ border: "1.5px solid #c4c4c4", boxShadow: "0 12px 40px rgba(0,0,0,0.15)" }}>
+    <div className="flex items-center gap-3 px-4 py-2.5" style={{ background: "linear-gradient(to bottom, #f0f0f0, #e4e4e4)", borderBottom: "1px solid #c4c4c4" }}>
+      <div className="flex gap-1.5">
+        <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ff5f56" }} />
+        <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ffbd2e" }} />
+        <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#27c93f" }} />
+      </div>
+      <div className="flex-1 flex justify-center">
+        <div style={{ background: "#fff", border: "1px solid #c4c4c4", borderRadius: 6, padding: "4px 16px", fontSize: 11, color: "#555", maxWidth: 480, width: "100%", textAlign: "center" }}>
+          {url}
+        </div>
+      </div>
+      <div style={{ width: 44 }} />
+    </div>
+    <div style={{ background: "#fff" }}>{children}</div>
+  </div>
+);
+
+/* ----- Mock GitLab MR (all-in-one for BrowserFrame) ----- */
+const MockGitLabMR = ({ showComment = false }) => {
+  const diffLinesTop = [
+    { type: "ctx", num: [12, 12], text: "## Acceptance Criteria" },
+    { type: "del", num: [13, null], text: "SMS sent when order ships" },
+    { type: "add", num: [null, 13], text: "SMS sent within 60s of order shipment event" },
+    { type: "add", num: [null, 14], text: "Sent only when customer has phone number on file", commentTarget: true },
+    { type: "add", num: [null, 15], text: "Falls back to email after 2 retries with backoff" },
+  ];
+  const diffLinesBottom = [
+    { type: "ctx", num: [14, 16], text: "" },
+    { type: "ctx", num: [15, 17], text: "## Scope" },
+    { type: "del", num: [16, null], text: "TBD" },
+    { type: "add", num: [null, 18], text: "In scope: order-shipment event handler, SMS sending, retry logic", commentTarget2: true },
+    { type: "add", num: [null, 19], text: "Out of scope: SMS opt-in/opt-out UI, billing reconciliation" },
+    { type: "ctx", num: [17, 20], text: "" },
+    { type: "ctx", num: [18, 21], text: "## Dependencies" },
+  ];
+
+  const DiffLine = ({ l, highlighted }) => {
+    const bg = highlighted ? (l.type === "add" ? "#b8e6c8" : "#f5c6cb") : l.type === "add" ? "#ddfbe6" : l.type === "del" ? "#fbe9eb" : "transparent";
+    const prefix = l.type === "add" ? "+" : l.type === "del" ? "−" : " ";
+    const prefixColor = l.type === "add" ? "#1a7f37" : l.type === "del" ? "#cf222e" : "#737373";
+    return (
+      <div className="flex" style={{ background: bg }}>
+        <span style={{ width: 36, textAlign: "right", padding: "0 6px", color: "#bbb", fontSize: 11, userSelect: "none" }}>{l.num[0] || ""}</span>
+        <span style={{ width: 36, textAlign: "right", padding: "0 6px", color: "#bbb", fontSize: 11, userSelect: "none", borderRight: "1px solid #ececec" }}>{l.num[1] || ""}</span>
+        <span style={{ padding: "0 8px", color: prefixColor, fontWeight: 600, width: 16 }}>{prefix}</span>
+        <span style={{ color: "#303030", flex: 1 }}>{l.text}</span>
+        {highlighted && <span style={{ padding: "0 8px", color: "#737373", fontSize: 10 }}>💬</span>}
+      </div>
+    );
+  };
+
+  const CommentThread = ({ avatar, name, handle, text, lineContext }) => (
+    <div style={{ margin: "0 16px", border: "1px solid #d4d4d4", borderRadius: 6, marginTop: -1, marginBottom: 8 }}>
+      {/* Line indicator */}
+      <div style={{ padding: "6px 12px", background: "#f8f8f8", borderBottom: "1px solid #ececec", fontSize: 11, color: "#737373", fontFamily: "JetBrains Mono, monospace" }}>
+        <span style={{ color: "#1a7f37" }}>+</span> {lineContext}
+      </div>
+      {/* Comment body */}
+      <div style={{ padding: "12px 14px" }}>
+        <div className="flex items-start gap-3">
+          <div style={{ width: 26, height: 26, borderRadius: "50%", background: avatar.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 600, color: avatar.color, flexShrink: 0 }}>{avatar.initials}</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 11, marginBottom: 4 }}>
+              <strong style={{ color: "#303030" }}>{name}</strong>
+              <span style={{ color: "#737373", marginLeft: 6, fontSize: 10 }}>{handle} · just now</span>
+            </div>
+            <div style={{ fontSize: 12, color: "#303030", lineHeight: 1.5 }}>{text}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ background: "#fff" }}>
+      {/* MR Title bar */}
+      <div style={{ padding: "16px 20px", borderBottom: "1px solid #ececec" }}>
+        <div className="flex items-center gap-2 mb-2">
+          <span style={{ background: "#1aaa55", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 3, fontWeight: 600 }}>Open</span>
+          <span className="mono text-sm" style={{ color: "#303030" }}>feat(042): spec — SMS on order shipment</span>
+          <span style={{ color: "#737373", fontSize: 13 }}>!1287</span>
+        </div>
+        <div style={{ fontSize: 12, color: "#737373" }}>
+          J. Rivera requested to merge <code style={{ background: "#f0f0f0", padding: "1px 6px", borderRadius: 3, fontSize: 11 }}>042-order-shipment-sms</code> into <code style={{ background: "#f0f0f0", padding: "1px 6px", borderRadius: 3, fontSize: 11 }}>main</code>
+        </div>
+      </div>
+      {/* Tab bar */}
+      <div className="flex" style={{ borderBottom: "1px solid #ececec", fontSize: 13 }}>
+        <span style={{ padding: "10px 16px", color: "#737373" }}>Overview</span>
+        <span style={{ padding: "10px 16px", color: "#737373" }}>Commits <span style={{ background: "#e1e1e1", borderRadius: 10, padding: "1px 6px", fontSize: 11 }}>2</span></span>
+        <span style={{ padding: "10px 16px", color: "#303030", fontWeight: 600, borderBottom: "2px solid #1f75cb" }}>Changes <span style={{ background: "#1f75cb", color: "#fff", borderRadius: 10, padding: "1px 6px", fontSize: 11 }}>3</span></span>
+      </div>
+      {/* Summary */}
+      <div style={{ padding: "16px 20px", borderBottom: "1px solid #ececec" }}>
+        <div style={{ fontSize: 13, color: "#303030", marginBottom: 12 }}>
+          <strong>Summary:</strong> Adds SMS notification when an order ships. Sends via messaging service with retry + email fallback.
+        </div>
+        <div className="flex flex-wrap gap-3 mb-4" style={{ fontSize: 11 }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "#1aaa55" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#1aaa55" }}></span>
+            Pipeline passed
+          </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "#737373" }}>
+            Approved by: <strong style={{ color: "#303030" }}>PO, Tech lead</strong>
+          </span>
+        </div>
+        <div className="flex gap-2">
+          <button style={{ background: "#1aaa55", color: "#fff", border: "none", padding: "8px 16px", borderRadius: 4, fontSize: 12, fontWeight: 600, opacity: 0.6, cursor: "not-allowed" }}>Merge</button>
+          <span style={{ fontSize: 11, color: "#737373", alignSelf: "center" }}>Merge blocked — awaiting approval</span>
+        </div>
+      </div>
+      {/* Diff — file header */}
+      <div style={{ padding: "8px 16px", background: "#fafafa", borderBottom: "1px solid #ececec", fontSize: 12, fontFamily: "JetBrains Mono, monospace", color: "#737373" }}>
+        specs/042-order-shipment-sms/spec.md
+      </div>
+      {/* Diff lines — top section */}
+      <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 12, lineHeight: "22px" }}>
+        {diffLinesTop.map((l, i) => (
+          <DiffLine key={i} l={l} highlighted={showComment && l.commentTarget} />
+        ))}
+      </div>
+      {/* First comment thread — on line 14 */}
+      {showComment && (
+        <CommentThread
+          avatar={{ initials: "AM", bg: "var(--sage-soft)", color: "var(--sage)" }}
+          name="J. Rivera"
+          handle="@j.rivera"
+          lineContext="Sent only when customer has phone number on file"
+          text="Should we also handle the case where the phone number is invalid, not just missing? The SMS provider API returns a different error code for that."
+        />
+      )}
+      {/* Diff lines — bottom section (continues after comment) */}
+      <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 12, lineHeight: "22px" }}>
+        {diffLinesBottom.map((l, i) => (
+          <DiffLine key={i} l={l} highlighted={showComment && l.commentTarget2} />
+        ))}
+      </div>
+      {/* Second comment thread — on line 18 */}
+      {showComment && (
+        <CommentThread
+          avatar={{ initials: "MS", bg: "#e8e0f0", color: "#6b4d8a" }}
+          name="S. Chen"
+          handle="@s.chen"
+          lineContext='In scope: order-shipment event handler, SMS sending, retry logic'
+          text='Can we add "SMS template content" to in-scope? The PO needs to sign off on the actual message text before we build it.'
+        />
+      )}
+    </div>
+  );
+};
+
+/* ----- Reusable Terminal Mock ----- */
+const TerminalMock = ({ title = "claude --dangerously-skip-permissions", branch, children, caption, compact = false }) => (
+  <div className="rounded-lg overflow-hidden" style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.25)" }}>
+    {/* Terminal top bar */}
+    <div className="flex items-center gap-2" style={{ background: "#0f1014", padding: "10px 14px", borderBottom: "1px solid #282a36" }}>
+      <div className="flex gap-1.5">
+        <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#ff5f56" }} />
+        <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#ffbd2e" }} />
+        <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#27c93f" }} />
+      </div>
+      <span style={{ marginLeft: 12, fontSize: 11, color: "#6a6b7f", fontFamily: "JetBrains Mono, monospace" }}>{title}</span>
+    </div>
+    {/* Terminal content */}
+    <div style={{ background: "#1a1b26", padding: compact ? "16px 20px" : "20px 24px", fontFamily: "JetBrains Mono, monospace", fontSize: 12, lineHeight: 1.6, color: "#c0caf5", display: "flex", flexDirection: "column", minHeight: compact ? 200 : 320 }}>
+      <div style={{ flex: 1 }}>{children}</div>
+      {/* Prompt area */}
+      <div style={{ marginTop: 16 }}>
+        <div style={{ marginBottom: 8, fontSize: 10, color: "#3b4261", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "clip" }}>
+          {'─'.repeat(120)} {branch && <span style={{ color: "#565f89" }}>{branch}</span>} {branch && '─'.repeat(4)}
+          {!branch && ''}
+        </div>
+        <div className="flex items-center gap-2">
+          <span style={{ color: "#7aa2f7" }}>{'❯'}</span>
+          <span style={{ display: "inline-block", width: 7, height: 14, background: "#7aa2f7", animation: "blink 1.2s step-end infinite" }} />
+        </div>
+        <div style={{ marginTop: 8, fontSize: 10, color: "#3b4261", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "clip" }}>
+          {'─'.repeat(140)}
+        </div>
+        <div style={{ marginTop: 6, fontSize: 10, display: "flex", justifyContent: "space-between" }}>
+          <span style={{ color: "#e0af68" }}>{'⏵⏵'} bypass permissions on (shift+tab to cycle)</span>
+          <span style={{ color: "#6a6b7f" }}>esc to interrupt</span>
+        </div>
+      </div>
+    </div>
+    {caption && (
+      <div style={{ background: "var(--paper-2)", padding: "12px 16px", borderTop: "1px solid #444", fontSize: 12, color: "var(--ink-3)", fontStyle: "italic" }}>
+        {caption}
+      </div>
+    )}
+  </div>
+);
+
+/* ----- Claude Code Intro (for BA/UX) — uses TerminalMock ----- */
+const ClaudeCodeIntro = () => (
+  <TerminalMock branch="042-order-shipment-sms" caption="This is Claude Code. You paste your Jira story, it drafts a structured spec and asks you the questions it cannot answer.">
+    {/* Welcome + mascot */}
+    <div style={{ color: "#9aa5ce", marginBottom: 4, fontSize: 11 }}>Claude Code v2.1.112</div>
+    <div style={{ marginBottom: 8, textAlign: "center", color: "#c0caf5" }}>Welcome back!</div>
+    <div style={{ marginBottom: 16, textAlign: "center", lineHeight: 1.2, fontSize: 18, color: "#c87533" }}>
+      <div>{'▐▛███▜▌'}</div>
+      <div>{'▝▜█████▛▘'}</div>
+      <div>{'  ▘▘ ▝▝'}</div>
+    </div>
+    <div style={{ marginBottom: 20, fontSize: 11, color: "#6a6b7f", textAlign: "center" }}>Opus 4.6 · API Usage Billing · ~/Projects/platform</div>
+
+    {/* User's message */}
+    <div className="flex items-center gap-2" style={{ marginBottom: 12 }}>
+      <span style={{ color: "#7aa2f7" }}>{'❯'}</span>
+      <span style={{ color: "#c0caf5" }}>/speckit.specify Story PROJ-2841: send an SMS confirmation when an order ships</span>
+    </div>
+
+    {/* AI output */}
+    <div style={{ paddingLeft: 8 }}>
+      <div style={{ color: "#6a6b7f" }}>→ Detected next feature number: 042</div>
+      <div style={{ color: "#6a6b7f" }}>→ Created branch <span style={{ color: "#e0af68" }}>042-order-shipment-sms</span></div>
+      <div style={{ color: "#9ece6a" }}>→ Drafted specs/042-order-shipment-sms/spec.md</div>
+      <div style={{ marginTop: 8, color: "#f7768e" }}>⚠  4 NEEDS CLARIFICATION markers:</div>
+      <div style={{ color: "#6a6b7f", paddingLeft: 12 }}>· Which tenants is this enabled for?</div>
+      <div style={{ color: "#6a6b7f", paddingLeft: 12 }}>· Retry policy on SMS provider 5xx?</div>
+      <div style={{ color: "#6a6b7f", paddingLeft: 12 }}>· Max SMS length — truncate or split?</div>
+      <div style={{ color: "#6a6b7f", paddingLeft: 12 }}>· Opt-out mechanism?</div>
+      <div style={{ marginTop: 8, color: "#9ece6a" }}>✓ Draft MR opened: !1287</div>
+    </div>
+  </TerminalMock>
+);
+
+/* ----- Command Terminal Outputs (for engineer view) ----- */
+const COMMAND_TERMINALS = {
+  constitution: {
+    branch: "main",
+    prompt: "/speckit.constitution",
+    lines: [
+      { color: "#6a6b7f", text: "→ Reading existing ADRs and architecture docs..." },
+      { color: "#6a6b7f", text: "→ Scanning layer structure (6 layers)" },
+      { color: "#9ece6a", text: "→ Generated memory/constitution.md" },
+      { color: null, text: "" },
+      { color: "#c0caf5", text: "  Articles:" },
+      { color: "#6a6b7f", text: "    I.   Layer-dependency rule (lower never imports higher)" },
+      { color: "#6a6b7f", text: "   II.   Shared contracts stay implementation-free" },
+      { color: "#6a6b7f", text: "  III.   Integrations only through approved service boundaries" },
+      { color: "#6a6b7f", text: "   IV.   Tenant isolation enforced in every plan" },
+      { color: "#6a6b7f", text: "    V.   Conventional commits enforced" },
+      { color: "#6a6b7f", text: "   VI.   No new abstractions without explicit waiver" },
+      { color: "#6a6b7f", text: "  VII.   Simplicity gate — 0 new projects unless justified" },
+      { color: "#6a6b7f", text: " VIII.   Use framework directly, no wrappers" },
+      { color: null, text: "" },
+      { color: "#9ece6a", text: "✓ Constitution committed. CI will enforce on every /speckit.plan." },
+    ]
+  },
+  specify: {
+    branch: "042-order-shipment-sms",
+    prompt: "/speckit.specify Story PROJ-2841: send SMS on order shipment. messaging service. SMS provider.",
+    lines: [
+      { color: "#6a6b7f", text: "→ Detected next feature number: 042" },
+      { color: "#6a6b7f", text: "→ Created branch 042-order-shipment-sms" },
+      { color: "#6a6b7f", text: "→ Reading story context and linked designs..." },
+      { color: "#9ece6a", text: "→ Drafted specs/042-order-shipment-sms/spec.md" },
+      { color: null, text: "" },
+      { color: "#f7768e", text: "⚠  4 NEEDS CLARIFICATION markers:" },
+      { color: "#6a6b7f", text: "   · Which tenants is this enabled for? (all / specific?)" },
+      { color: "#6a6b7f", text: "   · Retry policy on SMS provider 5xx?" },
+      { color: "#6a6b7f", text: "   · Max SMS length — truncate or split?" },
+      { color: "#6a6b7f", text: "   · Opt-out mechanism?" },
+      { color: null, text: "" },
+      { color: "#9ece6a", text: "✓ Draft MR opened: !1287" },
+    ]
+  },
+  clarify: {
+    branch: "042-order-shipment-sms",
+    prompt: "/speckit.clarify",
+    lines: [
+      { color: "#6a6b7f", text: "→ Found 4 unresolved NEEDS CLARIFICATION markers" },
+      { color: null, text: "" },
+      { color: "#c0caf5", text: "  Q1: Which tenants is this enabled for?" },
+      { color: "#e0af68", text: "  → Demo and tenant-beta. Behind feature flag." },
+      { color: "#9ece6a", text: "  ✓ Resolved" },
+      { color: null, text: "" },
+      { color: "#c0caf5", text: "  Q2: Retry policy on SMS provider 5xx?" },
+      { color: "#e0af68", text: "  → 2 retries with exponential backoff, then email fallback." },
+      { color: "#9ece6a", text: "  ✓ Resolved" },
+      { color: null, text: "" },
+      { color: "#c0caf5", text: "  Q3: Max SMS length?" },
+      { color: "#e0af68", text: "  → Truncate at 160 chars with '...' suffix." },
+      { color: "#9ece6a", text: "  ✓ Resolved" },
+      { color: null, text: "" },
+      { color: "#c0caf5", text: "  Q4: Opt-out mechanism?" },
+      { color: "#e0af68", text: "  → Out of scope for this feature. Tracked in PROJ-2899." },
+      { color: "#9ece6a", text: "  ✓ Resolved" },
+      { color: null, text: "" },
+      { color: "#9ece6a", text: "✓ All markers resolved. spec.md updated. MR ready for review." },
+    ]
+  },
+  plan: {
+    branch: "042-order-shipment-sms",
+    prompt: "/speckit.plan Use existing notification-service-client. Trigger from workflow handler on order_status==SHIPPED. No new abstractions.",
+    lines: [
+      { color: "#6a6b7f", text: "→ Reading specs/042-order-shipment-sms/spec.md" },
+      { color: "#6a6b7f", text: "→ Loading memory/constitution.md" },
+      { color: null, text: "" },
+      { color: "#c0caf5", text: "  Running constitution gates:" },
+      { color: "#6a6b7f", text: "  → Simplicity gate (Art. VII):       " },
+      { color: "#9ece6a", text: "    PASS — 0 new projects" },
+      { color: "#6a6b7f", text: "  → Anti-abstraction gate (Art. VIII): " },
+      { color: "#9ece6a", text: "    PASS — using framework directly" },
+      { color: "#6a6b7f", text: "  → Layer-dependency gate (Art. I):    " },
+      { color: "#9ece6a", text: "    PASS — no upward dependencies" },
+      { color: "#6a6b7f", text: "  → Multi-tenancy gate (Art. IV):      " },
+      { color: "#9ece6a", text: "    PASS — tenant-scoped via existing client" },
+      { color: null, text: "" },
+      { color: "#9ece6a", text: "✓ Generated plan.md, research.md, data-model.md, contracts/" },
+    ]
+  },
+  tasks: {
+    branch: "042-order-shipment-sms",
+    prompt: "/speckit.tasks",
+    lines: [
+      { color: "#6a6b7f", text: "→ Reading plan.md" },
+      { color: "#6a6b7f", text: "→ Decomposing into ordered tasks..." },
+      { color: null, text: "" },
+      { color: "#c0caf5", text: "  tasks.md:" },
+      { color: "#9ece6a", text: "  [ ] T001 [P] Add shipment_sms_template to contracts/" },
+      { color: "#9ece6a", text: "  [ ] T002     Write contract test (must fail first)" },
+      { color: "#9ece6a", text: "  [ ] T003     Wire shipment handler in workflow handler" },
+      { color: "#9ece6a", text: "  [ ] T004 [P] Update tenant config schema" },
+      { color: "#9ece6a", text: "  [ ] T005     Integration test vs SMS provider sandbox" },
+      { color: "#9ece6a", text: "  [ ] T006     Structured logging via agent-tools tracing" },
+      { color: "#9ece6a", text: "  [ ] T007 [P] Update tenant YAML (demo + tenant-beta)" },
+      { color: null, text: "" },
+      { color: "#6a6b7f", text: "  [P] = parallelizable (no dependencies on other tasks)" },
+      { color: "#9ece6a", text: "✓ 7 tasks generated. Review ordering in next stand-up." },
+    ]
+  },
+  implement: {
+    branch: "042-order-shipment-sms",
+    prompt: "/speckit.implement",
+    lines: [
+      { color: "#6a6b7f", text: "→ T001 [P] Adding shipment_sms_template..." },
+      { color: "#9ece6a", text: "  ✓ commit: feat(042): add shipment_sms_template to contracts" },
+      { color: "#6a6b7f", text: "→ T002 Writing contract test (red phase)..." },
+      { color: "#f7768e", text: "  ✗ test failing as expected" },
+      { color: "#6a6b7f", text: "→ T003 Implementing shipment handler..." },
+      { color: "#9ece6a", text: "  ✓ test passing (green phase)" },
+      { color: "#9ece6a", text: "  ✓ commit: feat(042): wire shipment handler" },
+      { color: "#6a6b7f", text: "→ T004 [P] Updating tenant config schema..." },
+      { color: "#9ece6a", text: "  ✓ commit: feat(042): add SMS config to tenant schema" },
+      { color: "#6a6b7f", text: "→ T005 Integration test..." },
+      { color: "#9ece6a", text: "  ✓ SMS provider sandbox: 200 OK" },
+      { color: "#9ece6a", text: "  ✓ commit: test(042): integration test for SMS send" },
+      { color: "#6a6b7f", text: "→ T006, T007..." },
+      { color: null, text: "" },
+      { color: "#9ece6a", text: "✓ All tasks complete. CI green. MR ready for review." },
+    ]
+  }
+};
+
+const CommandTerminalView = ({ cmdId }) => {
+  const t = COMMAND_TERMINALS[cmdId];
+  if (!t) return null;
+  return (
+    <TerminalMock branch={t.branch} compact>
+      {/* User's command */}
+      <div className="flex items-start gap-2" style={{ marginBottom: 12 }}>
+        <span style={{ color: "#7aa2f7", flexShrink: 0 }}>{'❯'}</span>
+        <span style={{ color: "#c0caf5", wordBreak: "break-word" }}>{t.prompt}</span>
+      </div>
+      {/* Output with staggered line animation */}
+      <div className="term-line-stagger" style={{ paddingLeft: 8 }}>
+        {t.lines.map((l, i) => (
+          <div key={i} style={{ color: l.color || "transparent", minHeight: l.text ? undefined : 12, animationDelay: `${0.1 + i * 0.04}s` }}>{l.text || '\u00A0'}</div>
+        ))}
+      </div>
+    </TerminalMock>
+  );
+};
+
+/* ===========================================================
+   SIMPLIFIED SECTION VARIANTS (for non-engineer roles)
+=========================================================== */
+
+/* ----- Simplified Commands (BA/UX only see specify + clarify) ----- */
+const CommandsSectionSimple = ({ role }) => {
+  const relevantCmds = COMMANDS.filter(c => c.id === "specify" || c.id === "clarify");
+  return (
+    <Section
+      id="commands"
+      wide
+      eyebrow="Your two commands"
+      title="You only need to know two."
+      lede={role === "ba"
+        ? "As a BA, you run these two commands in Claude Code after refinement. You paste your Jira story, the AI drafts a spec, and you resolve the open questions with the team."
+        : "As a UX designer, you run these for frontend features. You paste your designs and story, the AI drafts a spec referencing your Figma or Claude Design files."
+      }
+    >
+      <div className="space-y-6 reveal">
+        {relevantCmds.map(c => (
+          <div key={c.id} className="card p-6" style={{ borderColor: "var(--amber)" }}>
+            <div className="mono text-amber font-medium text-base mb-2">{c.cmd}</div>
+            <div className="text-sm text-ink-3 mb-3">
+              <span className="font-medium text-ink-2">When:</span> {c.when}
+            </div>
+            <p className="text-ink-2 text-sm leading-relaxed">{c.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="reveal mt-10" style={{ maxWidth: "100%" }}>
+        <Eyebrow>What does it look like?</Eyebrow>
+        <p className="text-ink-3 text-sm mt-2 mb-4">Here is what you see in Claude Code when you run /speckit.specify:</p>
+        <ClaudeCodeIntro />
+      </div>
+
+      {/* Design-to-spec connection visual */}
+      <div className="reveal mt-10">
+        <Eyebrow>How designs feed into the spec</Eyebrow>
+        <p className="text-ink-3 text-sm mt-2 mb-5">Your Figma or Claude Design files are referenced directly in the spec. The AI uses them as a contract when generating implementation tasks.</p>
+        <div className="card p-6" style={{ background: "#fafafa", overflow: "hidden" }}>
+          <svg viewBox="0 0 800 180" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "auto" }}>
+            {/* Design tool box */}
+            <rect x="20" y="40" width="160" height="100" rx="8" fill="#fff" stroke="#d4a574" strokeWidth="1.5" />
+            <rect x="30" y="50" width="60" height="10" rx="2" fill="#e8d5c4" />
+            <rect x="30" y="68" width="140" height="50" rx="4" fill="#f5ede5" stroke="#d4a574" strokeWidth="0.5" strokeDasharray="3 2" />
+            <rect x="40" y="78" width="50" height="30" rx="3" fill="#d4a574" opacity="0.3" />
+            <rect x="100" y="78" width="60" height="8" rx="2" fill="#c4b5a0" opacity="0.5" />
+            <rect x="100" y="92" width="45" height="8" rx="2" fill="#c4b5a0" opacity="0.3" />
+            <text x="100" y="155" fontSize="11" fill="#8b7355" fontFamily="system-ui" textAnchor="middle">Figma / Claude Design</text>
+
+            {/* Arrow 1: Design → Spec */}
+            <path d="M 190 90 L 278 90" stroke="#d4a574" strokeWidth="1.5" markerEnd="url(#arrowAmber2)" />
+            <text x="234" y="78" fontSize="9" fill="#8b7355" fontFamily="system-ui" textAnchor="middle">linked in</text>
+
+            {/* Spec box */}
+            <rect x="290" y="30" width="200" height="125" rx="8" fill="#fff" stroke="#6b8f71" strokeWidth="1.5" />
+            <rect x="304" y="42" width="80" height="8" rx="2" fill="#6b8f71" opacity="0.6" />
+            <text x="304" y="64" fontSize="9" fill="#555" fontFamily="monospace">## UI Components</text>
+            <text x="304" y="78" fontSize="9" fill="#555" fontFamily="monospace">- OrderCard (Figma:F3)</text>
+            <text x="304" y="92" fontSize="9" fill="#555" fontFamily="monospace">- StatusBadge (Figma:F7)</text>
+            <text x="304" y="106" fontSize="9" fill="#555" fontFamily="monospace">## Acceptance Criteria</text>
+            <text x="304" y="120" fontSize="9" fill="#555" fontFamily="monospace">- Matches design at 390px</text>
+            <rect x="304" y="132" width="60" height="6" rx="2" fill="#6b8f71" opacity="0.2" />
+            <text x="390" y="170" fontSize="11" fill="#4a6b4f" fontFamily="system-ui" textAnchor="middle">spec.md</text>
+
+            {/* Arrow 2: Spec → Tasks */}
+            <path d="M 500 90 L 588 90" stroke="#6b8f71" strokeWidth="1.5" markerEnd="url(#arrowSage2)" />
+            <text x="544" y="78" fontSize="9" fill="#4a6b4f" fontFamily="system-ui" textAnchor="middle">generates</text>
+
+            {/* Tasks box */}
+            <rect x="600" y="40" width="175" height="100" rx="8" fill="#fff" stroke="#737373" strokeWidth="1.5" />
+            <text x="614" y="62" fontSize="9" fill="#555" fontFamily="monospace">Task 1: OrderCard</text>
+            <rect x="614" y="68" width="100" height="4" rx="1" fill="#e8e8e8" />
+            <text x="614" y="88" fontSize="9" fill="#555" fontFamily="monospace">Task 2: StatusBadge</text>
+            <rect x="614" y="94" width="80" height="4" rx="1" fill="#e8e8e8" />
+            <text x="614" y="114" fontSize="9" fill="#555" fontFamily="monospace">Task 3: Layout 390px</text>
+            <rect x="614" y="120" width="90" height="4" rx="1" fill="#e8e8e8" />
+            <text x="688" y="155" fontSize="11" fill="#555" fontFamily="system-ui" textAnchor="middle">Implementation tasks</text>
+
+            {/* Arrow markers */}
+            <defs>
+              <marker id="arrowAmber2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M 0 0 L 8 3 L 0 6 Z" fill="#d4a574" />
+              </marker>
+              <marker id="arrowSage2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M 0 0 L 8 3 L 0 6 Z" fill="#6b8f71" />
+              </marker>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <div className="reveal mt-8 card p-6" style={{ background: "var(--paper-3)", borderColor: "var(--line)" }}>
+        <p className="text-ink-2 text-sm leading-relaxed">
+          After you hand off the approved spec, the engineer handles the rest: <span className="mono text-sage text-xs">/speckit.plan</span> → <span className="mono text-sage text-xs">/speckit.tasks</span> → <span className="mono text-sage text-xs">/speckit.implement</span>. You see the final code in review.
+        </p>
+      </div>
+    </Section>
+  );
+};
+
+/* ----- Simplified Commands (SA only sees constitution) ----- */
+const CommandsSectionSA = () => {
+  const cmd = COMMANDS.find(c => c.id === "constitution");
+  return (
+    <Section
+      id="commands"
+      eyebrow="Your primary command"
+      title="The constitution is yours."
+      lede="You define the architectural rules every feature must respect. The AI enforces them on every plan — no policing needed."
+    >
+      <div className="reveal">
+        <div className="card p-6" style={{ borderColor: "var(--amber)" }}>
+          <div className="mono text-amber font-medium text-base mb-2">{cmd.cmd}</div>
+          <div className="space-y-1 mb-4 text-sm text-ink-3">
+            <div><span className="font-medium text-ink-2">When:</span> {cmd.when}</div>
+            <div><span className="font-medium text-ink-2">Output:</span> <span className="mono text-sage">{cmd.output}</span></div>
+          </div>
+          <p className="text-ink-2 text-sm leading-relaxed">{cmd.desc}</p>
+        </div>
+      </div>
+
+      <div className="reveal mt-8 card p-6" style={{ background: "var(--paper-3)", borderColor: "var(--line)" }}>
+        <p className="text-ink-2 text-sm leading-relaxed">
+          The other five commands (<span className="mono text-xs">specify, clarify, plan, tasks, implement</span>) are run by BAs and engineers. You review plans for cross-cutting features and approve architecture-impacting changes.
+        </p>
+      </div>
+    </Section>
+  );
+};
+
+/* ----- Simplified Checkpoints (BA/PO/UX) ----- */
+const CheckpointsSectionSimple = ({ role }) => {
+  const roleMessages = {
+    ba: "Your work happens before Gate 1. You produce the spec that gets approved. After that, you answer questions during clarification and review the final code.",
+    po: "You approve Gate 1 — the spec MR. That is your main new touchpoint. You confirm that what is about to be built matches what you want.",
+    ux: "For frontend features, your designs feed directly into the spec. You review that the spec correctly captures your intent before Gate 1."
+  };
+  return (
+    <Section
+      id="checkpoints"
+      wide
+      eyebrow="Checkpoints"
+      title="Three gates. Three approvals."
+      lede="The spec gets approved. The plan gets approved. The code gets approved. Nothing proceeds without human sign-off."
+    >
+      {/* Visual flow */}
+      <div className="reveal mb-10">
+        <div className="flex items-center justify-center gap-3 flex-wrap">
+          <div className="card p-4 text-center" style={{ minWidth: 140 }}>
+            <div className="text-amber font-medium text-sm mb-1">Gate 1</div>
+            <div className="text-ink-2 text-xs">Spec MR approved</div>
+          </div>
+          <div style={{ width: 32, height: 2, background: "var(--line)" }}></div>
+          <div className="card p-4 text-center" style={{ minWidth: 140 }}>
+            <div className="text-amber font-medium text-sm mb-1">Gate 2</div>
+            <div className="text-ink-2 text-xs">Plan approved</div>
+          </div>
+          <div style={{ width: 32, height: 2, background: "var(--line)" }}></div>
+          <div className="card p-4 text-center" style={{ minWidth: 140 }}>
+            <div className="text-amber font-medium text-sm mb-1">Gate 3</div>
+            <div className="text-ink-2 text-xs">Code MR approved</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Role-specific message */}
+      <div className="reveal mb-10">
+        <div className="card p-6" style={{ borderLeft: "3px solid var(--amber)" }}>
+          <p className="text-ink-2 leading-relaxed">{roleMessages[role]}</p>
+        </div>
+      </div>
+
+      {/* Mock MR tutorial */}
+      <div className="reveal">
+        <h3 className="display text-xl md:text-2xl text-ink mb-3">What does "reviewing an MR" actually look like?</h3>
+        <p className="text-ink-3 text-base mt-2 mb-6">
+          An MR (Merge Request — think of it as a review request) is where you read the spec, see what changed, and leave feedback. Here is what you will see:
+        </p>
+        <BrowserFrame>
+          <MockGitLabMR showComment={true} />
+        </BrowserFrame>
+        <div className="mt-6 card p-5" style={{ borderLeft: "3px solid var(--amber)", background: "var(--paper-2)" }}>
+          <div className="text-amber font-medium text-sm mb-2">What you are looking at</div>
+          <p className="text-ink-2 text-sm leading-relaxed mb-2">A Merge Request (MR) in GitLab. It shows the spec title, who needs to approve, the diff (<span style={{ color: "#1a7f37", fontWeight: 500 }}>green = added</span>, <span style={{ color: "#cf222e", fontWeight: 500 }}>red = removed</span>), and inline comment threads where you leave feedback on specific lines.</p>
+          <p className="text-ink-3 text-sm leading-relaxed">You click on a line, type your question, and the BA or engineer responds in the same thread. No installation needed — it works in your browser.</p>
+        </div>
+      </div>
+    </Section>
+  );
+};
+
+/* ----- Simplified Walkthrough (BA/UX: steps 1-4, PO: steps 1,4,9) ----- */
+const WalkthroughSectionSimple = ({ role }) => {
+  const activeIndices = role === "po" ? [0, 3, 8] : [0, 1, 2, 3];
+  const [current, setCurrent] = useState(0); // index into activeIndices
+
+  return (
+    <Section
+      id="walkthrough"
+      wide
+      eyebrow={`Live example — your ${activeIndices.length} key moments`}
+      title="Where you show up in the process."
+      lede={role === "po"
+        ? "You are involved at three points: refinement, spec approval, and final acceptance. Here is what each looks like."
+        : "Your work spans the first four steps. After spec approval, the engineer takes over."
+      }
+    >
+      {/* Full 9-step timeline */}
+      <div className="reveal mb-10 overflow-x-auto">
+        <div className="flex items-center gap-0 min-w-max px-2">
+          {WALKTHROUGH.map((step, i) => {
+            const isActive = activeIndices.includes(i);
+            const activeIdx = activeIndices.indexOf(i);
+            const isCurrent = activeIdx === current;
+            return (
+              <React.Fragment key={i}>
+                {i > 0 && <div style={{ width: 24, height: 2, background: isActive || activeIndices.includes(i - 1) ? "var(--amber)" : "var(--line)", flexShrink: 0 }} />}
+                {isActive ? (
+                  <button
+                    onClick={() => setCurrent(activeIdx)}
+                    className={`text-left p-3 rounded-md flex-shrink-0 transition-all ${isCurrent ? "ring-2 ring-amber" : ""}`}
+                    style={{ minWidth: 140, background: isCurrent ? "var(--amber-soft)" : "var(--paper-2)", border: `1.5px solid ${isCurrent ? "var(--amber)" : "var(--line)"}` }}
+                  >
+                    <div className="mono text-xs mb-1" style={{ color: "var(--amber)" }}>Step {i + 1}</div>
+                    <div className={`text-sm font-medium ${isCurrent ? "text-ink" : "text-ink-2"}`}>{step.phase}</div>
+                  </button>
+                ) : (
+                  <div className="flex-shrink-0 text-center px-2 py-2" style={{ minWidth: 56, opacity: 0.4 }}>
+                    <div className="mono text-xs text-ink-faint">{i + 1}</div>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--line)", margin: "4px auto" }} />
+                    <div className="text-xs text-ink-faint leading-tight mt-1" style={{ maxWidth: 64 }}>{step.phase}</div>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Current step content */}
+      <div key={activeIndices[current]} className="reveal tab-content-enter">
+        <div className="card p-7" style={{ borderColor: "var(--ink)" }}>
+          <div className="mb-2">
+            <span className="chip chip-amber">{WALKTHROUGH[activeIndices[current]].phase}</span>
+            <span className="text-xs text-ink-3 ml-3">{WALKTHROUGH[activeIndices[current]].actor}</span>
+          </div>
+          <h3 className="display text-xl text-ink mb-3">{WALKTHROUGH[activeIndices[current]].title}</h3>
+          <p className="text-ink-2 leading-relaxed mb-4">{WALKTHROUGH[activeIndices[current]].desc}</p>
+          {WALKTHROUGH[activeIndices[current]].note && <p className="text-xs text-ink-3 italic">{WALKTHROUGH[activeIndices[current]].note}</p>}
+        </div>
+      </div>
+
+      {/* "What happens next" card */}
+      {role !== "po" && (
+        <div className="reveal mt-8 card p-6" style={{ background: "var(--paper-3)" }}>
+          <p className="text-ink-2 text-sm leading-relaxed">
+            From here, the engineer takes over. They generate the plan, break it into tasks, and implement with AI assistance. You see the final code in review and give final acceptance.
+          </p>
+        </div>
+      )}
+    </Section>
+  );
+};
+
+/* ===========================================================
+   ROLE SYSTEM
+=========================================================== */
+
+const ROLE_OPTIONS = [
+  { id: "ba", label: "Business Analyst", short: "BA", icon: "📋" },
+  { id: "po", label: "Product Owner", short: "PO", icon: "🎯" },
+  { id: "ux", label: "UX Designer", short: "UX", icon: "🎨" },
+  { id: "eng", label: "Engineer", short: "Eng", icon: "⚙️" },
+  { id: "sa", label: "Solution Architect", short: "SA", icon: "🏗️" },
+];
+
+const getSectionsForRole = (role) => {
+  if (role === "eng") return ["what", "today", "commands", "checkpoints", "roles", "faq", "more"];
+  if (role === "sa") return ["what", "today", "platform", "commands", "checkpoints", "roles", "faq", "more"];
+  if (role === "ba" || role === "ux") return ["what", "today", "commands", "checkpoints", "walkthrough", "roles", "faq", "more"];
+  if (role === "po") return ["what", "today", "checkpoints", "walkthrough", "roles", "faq", "more"];
+  return [];
+};
+
+
+/* ----- Progressive Reveal Wrapper ----- */
+const ProgressiveReveal = ({ children }) => {
+  const items = React.Children.toArray(children).filter(Boolean);
+  const [revealed, setRevealed] = useState(0);
+
+  useEffect(() => {
+    if (revealed >= items.length) return;
+    const timer = setTimeout(() => setRevealed(r => r + 1), 80);
+    return () => clearTimeout(timer);
+  }, [revealed, items.length]);
+
+  return (
+    <div>
+      {items.map((child, i) => (
+        <div key={i} className={i < revealed ? "section-enter" : ""} style={{
+          opacity: i < revealed ? undefined : 0,
+          animationDelay: `${i * 0.05}s`
+        }}>
+          {i < revealed ? child : <div className="section-skeleton mx-6 md:mx-10 my-8" style={{ maxWidth: "64rem", margin: "2rem auto" }} />}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/* ===========================================================
+   APP
+=========================================================== */
+
+function App() {
+  const [role, setRole] = useState(null);
+  useReveal();
+  const active = useActiveSection(NAV.map(n => n.id));
+  const visibleSections = role ? getSectionsForRole(role) : [];
+
+  return (
+    <div className="relative">
+      {role && <Nav active={active} visibleSections={visibleSections} />}
+      <Header />
+      <Opening role={role} setRole={setRole} />
+      {role && (
+        <ProgressiveReveal key={role}>
+          {visibleSections.includes("what") && <WhatIsSDD />}
+          {visibleSections.includes("platform") && <PlatformContext />}
+          {visibleSections.includes("today") && <TodayVsTomorrow />}
+          {visibleSections.includes("commands") && (
+            ["ba","ux"].includes(role) ? <CommandsSectionSimple role={role} /> :
+            role === "sa" ? <CommandsSectionSA /> : <CommandsSection />
+          )}
+          {visibleSections.includes("checkpoints") && (
+            ["ba","po","ux"].includes(role) ? <CheckpointsSectionSimple role={role} /> : <CheckpointsSection />
+          )}
+          {visibleSections.includes("walkthrough") && (
+            ["ba","po","ux"].includes(role) ? <WalkthroughSectionSimple role={role} /> : <WalkthroughSection />
+          )}
+          {visibleSections.includes("roles") && <RolesSection selectedRole={role} />}
+          {visibleSections.includes("faq") && <FAQSection role={role} />}
+          {visibleSections.includes("more") && <Resources />}
+          <Footer />
+        </ProgressiveReveal>
+      )}
+    </div>
+  );
+}
+
+/* ----- Nav ----- */
+const Nav = ({ active, visibleSections }) => (
+  <nav className="stickynav">
+    {NAV.filter(n => n.id === "open" || visibleSections.includes(n.id)).map(n => (
+      <a key={n.id} href={`#${n.id}`} className={active === n.id ? "active" : ""} title={n.label} />
+    ))}
+  </nav>
+);
+
+/* ----- Header ----- */
+const Header = () => (
+  <header className="ruled">
+    <div className="max-w-6xl mx-auto px-6 md:px-10 py-4 flex items-center justify-between text-xs">
+      <div className="flex items-center gap-3 mono">
+        <span className="drop"></span>
+        <span className="text-ink font-medium">SPEC-DRIVEN DEVELOPMENT</span>
+        <span className="text-ink-faint hidden md:inline">— workshop learning guide</span>
+      </div>
+      <div className="text-ink-faint hidden md:block mono">Educational material</div>
+    </div>
+  </header>
+);
+
+/* ----- Opening (includes role selector — single visual unit) ----- */
+const Opening = ({ role, setRole }) => (
+  <section id="open" className="ruled">
+    <div className="max-w-5xl mx-auto px-6 md:px-10 pt-8 pb-12 md:pt-10 md:pb-14">
+      <div className="flex flex-col md:flex-row md:items-center md:gap-10 lg:gap-16">
+        {/* Left column — text */}
+        <div className="flex-1 min-w-0">
+          <div className="reveal mb-3 inline-block" style={{ background: "rgba(19,62,248,0.08)", border: "1px dashed var(--amber)", borderRadius: 4, padding: "4px 12px" }}>
+            <span className="mono text-xs uppercase tracking-wider text-amber font-medium">Workshop module</span>
+          </div>
+          <h1 className="display-tight text-4xl md:text-5xl lg:text-6xl text-ink leading-[0.98] reveal" style={{ fontWeight: 400 }}>
+            What if requirements,<br/>
+            designs and code<br/>
+            could actually<br/>
+            <span className="marker-amber">stay in sync</span>?
+          </h1>
+          <p className="mt-6 text-base md:text-lg text-ink-2 reveal" style={{ maxWidth: "54ch", lineHeight: 1.5 }}>
+            One structured spec, living next to the code, becomes the source from which requirements, designs, and implementation are generated.
+          </p>
+        </div>
+        {/* Right column — animated visual */}
+        <div className="hero-visual-container flex-shrink-0 items-center justify-center hidden md:flex" style={{ width: 280 }}>
+          <HeroDriftConverge />
+        </div>
+      </div>
+
+      {/* Role selector — part of the same section */}
+      <div className="role-selector mt-10 pt-8 border-t border-line">
+        <div className="text-center">
+          <p className="text-ink-3 text-sm mb-5">This page adapts to your role. Pick one to continue.</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {ROLE_OPTIONS.map(opt => (
+              <button
+                key={opt.id}
+                onClick={() => setRole(opt.id)}
+                aria-pressed={role === opt.id}
+                className={`role-btn ${role === opt.id ? "selected" : role ? "dimmed" : ""}`}
+              >
+                <span style={{ fontSize: 22 }}>{opt.icon}</span>
+                <span className="font-medium text-sm" style={{ color: role === opt.id ? "var(--paper)" : "var(--ink)" }}>{opt.label}</span>
+              </button>
+            ))}
+          </div>
+          {!role && (
+            <p className="mt-4 text-ink-faint text-xs italic">Pick one — you can switch anytime.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+/* ----- What is SDD ----- */
+const WhatIsSDD = () => (
+  <Section
+    id="what"
+    eyebrow="What is Spec-Driven Development"
+    title="One sentence:"
+    lede="Instead of writing a Word doc, then translating it into Jira tickets, then translating those into code — we write one structured spec that becomes all three."
+  >
+    <PipelineFlow />
+
+    {/* TLDR strip */}
+    <div className="reveal mb-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-line rounded-lg overflow-hidden">
+        {[
+          { file: "spec.md", desc: "What we're building", color: "var(--amber)" },
+          { file: "plan.md", desc: "How we'll build it", color: "var(--sage)" },
+          { file: "tasks.md", desc: "Ordered work items", color: "var(--sage)" },
+          { file: "code", desc: "AI-assisted, human-reviewed", color: "var(--ink)" },
+        ].map((item, i) => (
+          <div key={i} className="p-4 text-center" style={{ borderRight: i < 3 ? "1px solid var(--line)" : "none", background: i === 0 ? "rgba(19,62,248,0.04)" : "var(--paper-2)" }}>
+            <div className="mono text-sm font-medium mb-1" style={{ color: item.color }}>{item.file}</div>
+            <div className="text-xs text-ink-3">{item.desc}</div>
+            {i < 3 && <div className="hidden md:block mt-2 text-ink-faint text-xs">→</div>}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className="grid md:grid-cols-2 gap-8 mt-4">
+      <div className="reveal">
+        <div className="chip mb-4">Today</div>
+        <div className="card p-7 stripe-old">
+          <div className="display text-2xl text-ink mb-4">Three artifacts, three sources of truth.</div>
+          <div className="space-y-3 text-ink-2">
+            <div className="flex items-center gap-3">
+              <span className="mono text-xs num text-ink-faint w-8">01</span>
+              <span>Requirements live in Confluence / Jira description fields</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="mono text-xs num text-ink-faint w-8">02</span>
+              <span>Designs live in Figma / Claude Design</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="mono text-xs num text-ink-faint w-8">03</span>
+              <span>Code lives in Git</span>
+            </div>
+            <div className="pt-3 mt-3" style={{ borderTop: "1px dashed var(--line)" }}>
+              <span className="text-rust">→</span> They drift apart silently. Teams rely on chat threads and memory to reconnect them.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="reveal">
+        <div className="chip chip-amber mb-4">With SDD</div>
+        <div className="card p-7" style={{ background: "var(--paper)", borderColor: "var(--ink)" }}>
+          <div className="display text-2xl text-ink mb-4">One artifact, with references to the others.</div>
+          <div className="space-y-3 text-ink-2">
+            <div className="flex items-center gap-3">
+              <span className="text-amber">●</span>
+              <span><strong className="text-ink">spec.md</strong> in the feature branch holds the requirements</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-ink-faint">↳</span>
+              <span>Linked to the backlog item (existing ID, e.g. PROJ-2841)</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-ink-faint">↳</span>
+              <span>Linked to the design files (Figma / Claude Design)</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-ink-faint">↳</span>
+              <span>The code in the same branch is generated to match it</span>
+            </div>
+            <div className="pt-3 mt-3" style={{ borderTop: "1px dashed var(--amber)" }}>
+              <span className="text-amber">→</span> When code, design or requirements change, the spec changes with them. Drift becomes visible in a Merge Request.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="reveal mt-16 grid md:grid-cols-3 gap-8 text-sm">
+      <div>
+        <Eyebrow>Why it works now</Eyebrow>
+        <p className="mt-3 text-ink-2 leading-relaxed">AI can now read a structured spec and produce non-trivial code. This was not practical two years ago. It is now.</p>
+      </div>
+      <div>
+        <Eyebrow>Why for complex platforms</Eyebrow>
+        <p className="mt-3 text-ink-2 leading-relaxed">Large platforms span many repositories and layers. One feature can ripple across services, integrations, shared contracts, and configuration. Without a single source of truth, the ripple is invisible until production. With one, it shows up in review.</p>
+      </div>
+      <div>
+        <Eyebrow>What this is not</Eyebrow>
+        <p className="mt-3 text-ink-2 leading-relaxed">It is not "AI writes code while humans nap". Every step is reviewable. Nothing auto-merges. Engineers stay in the driver's seat — they just drive a different vehicle.</p>
+      </div>
+    </div>
+  </Section>
+);
+
+/* ----- Platform context (layer model) ----- */
+const PlatformContext = () => (
+  <Section
+    id="platform"
+    eyebrow="Quick context — layered architecture"
+    title="Layered architecture in six levels. You do not need to memorize every repo."
+    lede="Enough context so the rest of this guide makes sense. Higher layers depend on lower layers — never the reverse. A higher layer can use a lower layer; a lower layer never depends on a higher one."
+  >
+    <div className="grid md:grid-cols-12 gap-8 mt-4">
+      <div className="md:col-span-7 reveal">
+        <LayerPyramid />
+        <div className="space-y-1">
+          {LAYERS.map(l => (
+            <div key={l.n} className="layer-row">
+              <span className="layer-num num">{l.n}</span>
+              <div className="flex-1">
+                <div className="text-ink font-medium">{l.name}</div>
+                <div className="text-ink-3 text-xs mt-0.5">{l.desc}</div>
+              </div>
+              <span className="chip" style={{ fontSize: 10 }}>
+                {l.group === "interface" && "interface"}
+                {l.group === "core" && "agents & logic"}
+                {l.group === "data" && "data & rules"}
+              </span>
+            </div>
+          ))}
+        </div>
+        <p className="mt-6 text-xs text-ink-faint italic">Plus configuration, infrastructure, and test repos in a monorepo or multi-repo layout. Most features touch one or two areas; cross-cutting features touch more.</p>
+      </div>
+
+      <div className="md:col-span-5 reveal">
+        <div className="card p-6">
+          <Eyebrow>Why this matters for you</Eyebrow>
+          <p className="mt-3 text-ink-2 leading-relaxed text-sm">
+            Most features touch <strong>one</strong> layer (e.g. a single UI screen or one backend service). Some touch <strong>several</strong> (e.g. a notification feature spanning the API gateway, messaging service, shared contracts, and tenant configuration).
+          </p>
+          <p className="mt-3 text-ink-2 leading-relaxed text-sm">
+            When a feature is cross-cutting, the spec MR goes through <strong>architecture review</strong> with the <strong>software architect</strong>. When it is single-domain, it goes through the relevant <strong>tech lead</strong>.
+          </p>
+        </div>
+
+        <div className="card p-6 mt-4" style={{ borderColor: "var(--amber)" }}>
+          <Eyebrow color="var(--amber)">The constitution</Eyebrow>
+          <p className="mt-3 text-ink-2 leading-relaxed text-sm">
+            The "lower never depends on higher" rule, multi-tenant isolation, and a handful of other architectural rules are encoded once in <span className="mono text-amber">memory/constitution.md</span>. The AI must respect them on every plan.
+          </p>
+          <p className="mt-3 text-ink-2 leading-relaxed text-sm">
+            Today these rules are documented in ADRs and remembered by humans. Tomorrow they fail CI when violated. Less policing, more deciding.
+          </p>
+        </div>
+      </div>
+    </div>
+  </Section>
+);
+
+/* ----- Today vs Tomorrow (side-by-side for engineers, list for others) ----- */
+const TODAY_STEPS = [
+  "Story written (BA)",
+  "Refinement (team)",
+  "Sprint planning",
+  "Implementation (engineer)",
+  "Code review",
+  "Test & merge"
+];
+
+const TodayVsTomorrow = () => (
+  <Section
+    id="today"
+    wide
+    eyebrow="Process"
+    title="What changes, what stays."
+    lede="Refinement, sprint planning, code review, testing — all unchanged. The new bit: a versioned spec and a generated plan sit between refinement and implementation."
+  >
+    <div className="reveal grid md:grid-cols-2 gap-6">
+      {/* Left: Today */}
+      <div>
+        <div className="chip mb-4">Today</div>
+        <div className="card p-6 stripe-old">
+          <div className="space-y-3">
+            {TODAY_STEPS.map((s, i) => (
+              <div key={i} className="flex items-center gap-3 text-sm text-ink-3">
+                <span className="mono text-xs num w-5 text-ink-faint">{i+1}</span>
+                <span>{s}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 pt-4 text-xs text-ink-faint" style={{ borderTop: "1px dashed var(--line)" }}>
+            Requirements live in Jira/Confluence. They drift from code silently.
+          </div>
+        </div>
+      </div>
+
+      {/* Right: With SDD */}
+      <div>
+        <div className="chip chip-amber mb-4">With SDD</div>
+        <div className="card p-6" style={{ borderColor: "var(--ink)", background: "var(--paper)" }}>
+          <div className="space-y-3">
+            {TOMORROW_FLOW.map((f, i) => (
+              <div key={i} className={`flex items-center gap-3 text-sm ${!f.same ? "text-ink font-medium" : "text-ink-3"}`}>
+                <span className="mono text-xs num w-5 text-ink-faint">{(i+1).toString().padStart(2,"0")}</span>
+                <span className="flex-1">{f.step}</span>
+                {f.badge && (
+                  <span className="chip" style={{
+                    fontSize: 8, padding: "1px 6px",
+                    borderColor: f.badge === "GATE" ? "var(--amber)" : f.badge === "NEW" ? "var(--sage)" : "var(--ink-3)",
+                    color: f.badge === "GATE" ? "var(--amber)" : f.badge === "NEW" ? "var(--sage)" : "var(--ink-3)",
+                    background: f.badge === "GATE" ? "rgba(19,62,248,0.06)" : f.badge === "NEW" ? "rgba(0,178,255,0.06)" : "transparent"
+                  }}>{f.badge}</span>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 pt-4 text-xs text-ink-2" style={{ borderTop: "1px dashed var(--amber)" }}>
+            Spec lives next to the code. Drift shows up in a Merge Request.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="reveal mt-6 flex flex-wrap gap-4 text-xs text-ink-3">
+      <span className="flex items-center gap-2"><span className="chip chip-amber" style={{ fontSize: 9 }}>GATE</span> Human approval required</span>
+      <span className="flex items-center gap-2"><span className="chip chip-sage" style={{ fontSize: 9 }}>NEW</span> New step</span>
+      <span className="flex items-center gap-2"><span className="chip" style={{ fontSize: 9 }}>CHANGED</span> Modified step</span>
+    </div>
+  </Section>
+);
+
+/* ----- Commands ----- */
+const CommandsSection = () => {
+  const [open, setOpen] = useState("constitution");
+  const cmd = COMMANDS.find(c => c.id === open);
+  const isEngCmd = ["plan", "tasks", "implement"].includes(cmd.id);
+  return (
+    <Section
+      id="commands"
+      wide
+      eyebrow="The six commands"
+      title="Six commands. That is the new bit."
+      lede="You own the implementation phase: plan, tasks, implement. BAs own the spec phase: specify and clarify. You move from translation work to architecture and review — the interesting parts of the job get more time, the boilerplate gets less."
+    >
+      <CommandTimeline active={open} onSelect={setOpen} />
+      <div className="grid md:grid-cols-12 gap-6 reveal">
+        <div className="md:col-span-3">
+          <div className="space-y-2">
+            {COMMANDS.map((c, i) => {
+              const isEng = ["plan", "tasks", "implement"].includes(c.id);
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => setOpen(c.id)}
+                  className={`w-full text-left p-4 ${open === c.id ? "card active" : "card"}`}
+                >
+                  <div className="flex items-baseline gap-3">
+                    <span className="mono text-xs num text-ink-faint">0{i+1}</span>
+                    <span className={`mono font-medium text-sm ${isEng ? "text-sage" : "text-amber"}`}>{c.cmd}</span>
+                  </div>
+                  <div className="mt-1 text-xs text-ink-3 ml-7">{c.owner}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="md:col-span-9">
+          <div key={cmd.id} className="tab-content-enter">
+            {/* Detail card */}
+            <div className="card p-6 mb-4" style={{ borderColor: "var(--ink)" }}>
+              <div className={`mono font-medium text-base mb-3 ${isEngCmd ? "text-sage" : "text-amber"}`}>{cmd.cmd}</div>
+              <div className="grid sm:grid-cols-3 gap-x-4 gap-y-1 mb-4 text-sm text-ink-3">
+                <div><span className="font-medium text-ink-2">Owner:</span> {cmd.owner}</div>
+                <div><span className="font-medium text-ink-2">When:</span> {cmd.when}</div>
+                <div><span className="font-medium text-ink-2">Output:</span> <span className="mono text-sage text-xs">{cmd.output}</span></div>
+              </div>
+              <p className="text-ink-2 leading-relaxed text-sm">{cmd.desc}</p>
+            </div>
+            {/* Terminal mock */}
+            <CommandTerminalView cmdId={cmd.id} />
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+};
+
+/* ----- Checkpoints ----- */
+const CHECKPOINT_PHASES = [
+  { label: "Spec phase", color: "var(--amber)", items: [0, 1, 2, 3] },
+  { label: "Plan phase", color: "var(--sage)", items: [4, 5, 6] },
+  { label: "Delivery phase", color: "var(--ink)", items: [7, 8, 9] },
+];
+
+const CheckpointsSection = () => (
+  <Section
+    id="checkpoints"
+    eyebrow="Checkpoints"
+    title="Where the gates are. Who opens them."
+    lede="Three checkpoints matter most. Approve the spec. Approve the plan. Approve the code. The rest follows."
+  >
+    <div className="grid md:grid-cols-12 gap-8 mt-4">
+      <div className="md:col-span-8 reveal">
+        {CHECKPOINT_PHASES.map((phase, pi) => (
+          <div key={pi} className={pi > 0 ? "mt-8" : ""}>
+            <div className="flex items-center gap-3 mb-4">
+              <div style={{ width: 8, height: 8, borderRadius: 2, background: phase.color }} />
+              <span className="mono text-xs uppercase tracking-wider" style={{ color: phase.color }}>{phase.label}</span>
+              <div className="flex-1 h-px" style={{ background: phase.color, opacity: 0.2 }} />
+            </div>
+            <div className="space-y-1">
+              {phase.items.map(i => {
+                const c = CHECKPOINTS[i];
+                return (
+                  <div key={i} className={`checkpoint ${c.gate ? "gate" : ""}`}>
+                    <div className="flex items-baseline gap-3 mb-1">
+                      <span className="mono text-xs num text-ink-faint">{(i+1).toString().padStart(2,"0")}</span>
+                      <span className={`text-base ${c.gate ? "text-amber font-medium" : "text-ink"}`}>{c.stage}</span>
+                      {c.gate && <span className="chip chip-amber" style={{ fontSize: 9 }}>GATE</span>}
+                    </div>
+                    <div className="text-sm text-ink-3 ml-6">
+                      <div>{c.who}</div>
+                      <div className="mt-1 text-ink-faint">→ {c.out}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="md:col-span-4 reveal">
+        <div className="card p-6 sticky" style={{ top: 24 }}>
+          <Eyebrow>The three gates</Eyebrow>
+          <ol className="mt-4 space-y-4 text-sm text-ink-2 leading-relaxed">
+            <li>
+              <strong className="text-ink">Spec MR approval</strong> — PO and Tech lead agree on what is being built.
+            </li>
+            <li>
+              <strong className="text-ink">Plan / architecture review</strong> — Tech lead (or software architect if cross-cutting).
+            </li>
+            <li>
+              <strong className="text-ink">Code review</strong> — your existing peer review, unchanged.
+            </li>
+          </ol>
+          <p className="mt-5 text-xs text-ink-3 italic">Nothing proceeds without human sign-off. The AI never bypasses a gate.</p>
+        </div>
+      </div>
+    </div>
+  </Section>
+);
+
+/* ----- Walkthrough ----- */
+const WalkthroughSection = () => {
+  const [step, setStep] = useState(0);
+  const cur = WALKTHROUGH[step];
+  return (
+    <Section
+      id="walkthrough"
+      eyebrow="Live example — feature 042"
+      title="One feature, end to end."
+      lede="A real-shaped example: 'send an SMS confirmation when an order ships'. A small feature, single-domain, no cross-cutting drama. The full nine steps, with what each step actually produces."
+    >
+      {/* Progress bar */}
+      <div className="reveal flex items-center gap-0 mb-10 px-2 overflow-x-auto">
+        {WALKTHROUGH.map((s, i) => {
+          const isGate = [3, 4, 7, 8].includes(i);
+          const cls = i < step ? "done" : i === step ? "current" : "";
+          return (
+            <React.Fragment key={i}>
+              <div
+                onClick={() => setStep(i)}
+                className={`progress-dot ${cls} ${isGate ? "gate-dot" : ""}`}
+                title={s.title}
+              />
+              {i < WALKTHROUGH.length - 1 && (
+                <div className={`progress-line ${i < step ? "done" : ""}`} />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      <div className="reveal grid md:grid-cols-12 gap-8 mt-4">
+        <div className="md:col-span-4">
+          <div className="space-y-1">
+            {WALKTHROUGH.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => setStep(i)}
+                className={`w-full text-left p-3 transition-all flex items-baseline gap-3 ${i === step ? "border-l-2 border-amber bg-paper-2" : "border-l-2 border-transparent hover:bg-paper-2"}`}
+              >
+                <span className="mono text-xs num text-ink-faint shrink-0 w-6">{(i+1).toString().padStart(2,"0")}</span>
+                <div className="min-w-0">
+                  <div className={`text-sm ${i === step ? "text-ink font-medium" : "text-ink-2"}`}>{s.title}</div>
+                  <div className="text-xs text-ink-faint mt-0.5">{s.phase}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+          <div className="mt-6 flex gap-2">
+            <button onClick={() => setStep(Math.max(0, step-1))} className="btn" disabled={step === 0}>← Prev</button>
+            <button onClick={() => setStep(Math.min(WALKTHROUGH.length-1, step+1))} className="btn btn-primary" disabled={step === WALKTHROUGH.length-1}>Next →</button>
+          </div>
+        </div>
+
+        <div className="md:col-span-8">
+          <div key={step} className="walkthrough-enter">
+            <div className="flex items-baseline gap-3 mb-3">
+              <span className="mono text-amber text-xs num">STEP {(step+1).toString().padStart(2,"0")} / {WALKTHROUGH.length.toString().padStart(2,"0")}</span>
+              <span className="text-ink-faint text-xs mono uppercase tracking-wider">{cur.actor}</span>
+            </div>
+            <h3 className="display text-3xl text-ink mb-3">{cur.title}</h3>
+            <p className="text-ink-2 leading-relaxed mb-6 max-w-2xl">{cur.desc}</p>
+
+            {cur.artifact && <Artifact a={cur.artifact} />}
+
+            {cur.note && (
+              <p className="mt-6 text-sm text-ink-3 italic" style={{ borderLeft: "2px solid var(--line)", paddingLeft: 14 }}>
+                {cur.note}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+};
+
+const Artifact = ({ a }) => {
+  if (a.type === "term") {
+    return (
+      <div className="codeblock">
+        {a.lines.map(([cls, txt], i) => (
+          <div key={i} className={cls || ""}>{txt || "\u00A0"}</div>
+        ))}
+      </div>
+    );
+  }
+  if (a.type === "story") {
+    return (
+      <div className="card p-6" style={{ background: "var(--paper)" }}>
+        <div className="chip mb-3" style={{ fontSize: 10 }}>JIRA STORY</div>
+        <div className="text-ink font-medium mb-3">{a.title}</div>
+        <div className="text-sm text-ink-2 mb-4">
+          <strong>{a.role}</strong>, <span>{a.want}</span>, <span>{a.so}.</span>
+        </div>
+        <Eyebrow>Acceptance criteria</Eyebrow>
+        <ul className="mt-2 space-y-1.5 text-sm text-ink-2">
+          {a.ac.map((x, i) => <li key={i} className="flex gap-2"><span className="text-ink-faint">·</span><span>{x}</span></li>)}
+        </ul>
+      </div>
+    );
+  }
+  if (a.type === "qa") {
+    return (
+      <div className="space-y-3">
+        {a.pairs.map(([q, ans], i) => (
+          <div key={i} className="grid grid-cols-12 gap-3 items-start">
+            <div className="col-span-5 card p-3 text-sm" style={{ background: "var(--paper-2)" }}>
+              <div className="mono text-xs uppercase mb-1 text-ink-faint">AI asks</div>
+              <div className="text-ink-2">{q}</div>
+            </div>
+            <div className="col-span-1 text-center text-amber">→</div>
+            <div className="col-span-6 card p-3 text-sm" style={{ borderColor: "var(--amber)", background: "rgba(19,62,248,0.04)" }}>
+              <div className="mono text-xs uppercase mb-1 text-amber">Team answers</div>
+              <div className="text-ink">{ans}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (a.type === "mr") {
+    return (
+      <div className="card p-5">
+        <div className="flex items-center gap-2 text-xs mono uppercase tracking-wider text-sage mb-3">
+          <span className="dot" style={{ background: "var(--sage)" }}></span>
+          GitLab MR · ready for review
+        </div>
+        <div className="text-ink mb-3 font-medium">{a.title}</div>
+        <div className="text-xs text-ink-3 mb-4">Reviewers: {a.reviewers.join(", ")}</div>
+        <div className="space-y-1.5 text-sm text-ink-2">
+          {a.checks.map((c, i) => <div key={i} className="flex gap-2"><span className="text-sage">✓</span>{c}</div>)}
+        </div>
+      </div>
+    );
+  }
+  if (a.type === "tasks") {
+    return (
+      <div className="codeblock">
+        <div className="dim mb-3"># tasks.md</div>
+        {a.items.map(([t, p, desc], i) => (
+          <div key={i} className="flex gap-3 mb-1">
+            <span className="dim">[ ]</span>
+            <span className="cmd">{t}</span>
+            {p && <span className="ok">{p}</span>}
+            <span>{desc}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+/* ----- Roles ----- */
+const RolesSection = ({ selectedRole }) => {
+  const role = ROLES.find(r => r.id === selectedRole) || ROLES[0];
+
+  // Compact version for engineers — the rest of the page already tells them everything
+  if (selectedRole === "eng") {
+    return (
+      <Section id="roles" eyebrow="What changes for you" title="Less translation, more architecture and review.">
+        <div className="reveal">
+          <div className="card p-7" style={{ borderLeft: "3px solid var(--amber)" }}>
+            <p className="text-ink-2 leading-relaxed"><Fmt>{role.reallyChanges}</Fmt></p>
+          </div>
+        </div>
+        <div className="reveal mt-6 flex flex-wrap gap-2">
+          <span className="text-xs text-ink-3 mr-2">You keep doing:</span>
+          {role.keepDoing.map((k, i) => (
+            <span key={i} className="chip chip-sage">{k}</span>
+          ))}
+        </div>
+      </Section>
+    );
+  }
+
+  return (
+    <Section
+      id="roles"
+      eyebrow={`What changes for you — ${role.label}`}
+      title={role.sub}
+    >
+      <div className="reveal">
+        <div className="card p-7 mb-8" style={{ borderLeft: "3px solid var(--amber)" }}>
+          <p className="text-ink-2 leading-relaxed"><Fmt>{role.summary}</Fmt></p>
+        </div>
+      </div>
+
+      <div className="reveal grid md:grid-cols-2 gap-8">
+        <div>
+          <Eyebrow>What you own</Eyebrow>
+          <ul className="mt-4 space-y-3">
+            {role.owns.map((o, i) => (
+              <li key={i} className="flex gap-3 text-ink-2 leading-relaxed text-sm">
+                <span className="mono text-amber text-xs num pt-0.5">{(i+1).toString().padStart(2,"0")}</span>
+                <span><Fmt>{o}</Fmt></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <Eyebrow>What you hand over</Eyebrow>
+          <ul className="mt-4 space-y-3">
+            {role.handsOver.map((o, i) => (
+              <li key={i} className="flex gap-3 text-ink-2 leading-relaxed text-sm">
+                <span className="text-amber pt-0.5">→</span>
+                <span><Fmt>{o}</Fmt></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="reveal mt-8 grid md:grid-cols-2 gap-8">
+        <div>
+          <Eyebrow>What really changes</Eyebrow>
+          <p className="mt-3 text-ink-2 leading-relaxed text-sm"><Fmt>{role.reallyChanges}</Fmt></p>
+        </div>
+        <div>
+          <Eyebrow>You keep doing</Eyebrow>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {role.keepDoing.map((k, i) => (
+              <span key={i} className="chip chip-sage">{k}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+};
+
+/* ----- FAQ ----- */
+const FAQS = [
+  {
+    q: "What if the AI hallucinates something?",
+    a: "It will, sometimes. That is why every step has a human gate. Clarification catches ambiguity before code. The plan goes through architect/Tech lead review. Tasks are reviewed before implementation. Each commit is reviewed before merge. The point is to give humans better artifacts to judge — not to remove them from the loop.",
+    roles: ["ba", "po", "ux", "eng", "sa"]
+  },
+  {
+    q: "How do engineers work with SDD?",
+    a: "Engineers own the technical side: /speckit.plan, /speckit.tasks, and /speckit.implement. They move from translation work to architecture and review. The interesting parts of the job get more time; the boilerplate gets less. Tech leads in particular shift toward being the trusted reviewers of generated plans for their domain.",
+    roles: ["sa"]
+  },
+  {
+    q: "Are we replacing BAs or POs?",
+    a: "No. SDD gives business intent a place to live that does not rot. BAs spend less time translating stories into sub-tasks — that step gets automated. They spend more time on discovery, edge cases, and stakeholders. Same for POs.",
+    roles: ["ba", "po", "ux", "eng", "sa"]
+  },
+  {
+    q: "How does this work across many repos?",
+    a: "One spec per feature. If a feature is single-domain, the spec lives in that repository. If it spans multiple repos (for example, a notification feature across several services), the spec often lives in a shared architecture folder for cross-cutting design. Link merge requests by feature number (042-...) across repos in your organization.",
+    roles: ["eng", "sa"]
+  },
+  {
+    q: "Will this slow us down at first?",
+    a: "Yes. The first 2-3 features will feel slower because the team is learning a new flow. After that, single features get faster (less back-and-forth on Teams), and pivots get dramatically faster (regenerate the plan in a morning instead of rewriting it over a week).",
+    roles: ["ba", "po", "ux", "eng", "sa"]
+  },
+  {
+    q: "What happens to existing Confluence pages and Jira tickets?",
+    a: "They stay where they are. Teams typically do not retroactively migrate. New features use SDD. When an older feature changes materially, extract a spec into the repository as part of that work.",
+    roles: ["ba", "po", "ux", "eng", "sa"]
+  },
+  {
+    q: "Do BAs / POs / designers need to learn the slash commands?",
+    a: "BAs learn /speckit.specify and /speckit.clarify — these are the commands that turn a Jira story into a structured spec. UI/UX designers learn the same two commands for frontend features. POs review the outputs in GitLab and don't need to run commands. Engineers handle /speckit.plan, /speckit.tasks, and /speckit.implement.",
+    roles: ["ba", "po", "ux"]
+  },
+  {
+    q: "Do I need to learn Git?",
+    a: "A short crash course in Git basics will be necessary — branching, commits, merge requests. Claude Code handles most of the git operations for you (creating branches, committing), but you need to understand what is happening so you can review confidently in GitLab. Think of it as learning to read a map, not drive the car.",
+    roles: ["ba", "po", "ux"]
+  }
+];
+
+const FAQSection = ({ role }) => {
+  const filtered = role ? FAQS.filter(f => f.roles.includes(role)) : FAQS;
+  const [open, setOpen] = useState(0);
+  return (
+    <Section
+      id="faq"
+      eyebrow="FAQ"
+      title="Questions you are already asking."
+    >
+      <div className="reveal mt-4">
+        {filtered.map((f, i) => (
+          <div key={f.q} className="border-b border-line">
+            <button onClick={() => setOpen(open === i ? -1 : i)} className="w-full text-left py-6 flex justify-between items-baseline gap-4 group">
+              <span className={`text-ink display text-lg md:text-xl group-hover:text-amber transition-colors text-left ${open === i ? "faq-active-q" : ""}`}>{f.q}</span>
+              <span className="text-amber text-2xl shrink-0 transition-transform" style={{ transform: open === i ? "rotate(45deg)" : "none" }}>+</span>
+            </button>
+            <div className={`faq-answer ${open === i ? "open" : ""}`}>
+              <div>
+                <div className="pb-8 text-ink-2 leading-relaxed max-w-3xl"><Fmt>{f.a}</Fmt></div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+};
+
+/* ----- Resources ----- */
+const Resources = () => (
+  <Section
+    id="more"
+    num="10"
+    eyebrow="Resources"
+    title="If you want to go deeper."
+  >
+    <div className="grid md:grid-cols-2 gap-6 mt-4 reveal">
+      <a className="card p-7 block" href="https://github.com/github/spec-kit" target="_blank" rel="noopener" style={{ textDecoration: "none" }}>
+        <Eyebrow>The toolkit</Eyebrow>
+        <div className="display text-2xl text-ink mt-3 mb-2">github/spec-kit</div>
+        <p className="text-ink-2 text-sm leading-relaxed">Open-source toolkit from GitHub. Templates, the constitution, and the slash commands. Install this in your project to use the slash commands.</p>
+        <div className="mt-4 mono text-xs text-amber">github.com/github/spec-kit ↗</div>
+      </a>
+
+      <a className="card p-7 block" href="https://www.youtube.com/watch?v=a9eR1xsfvHg" target="_blank" rel="noopener" style={{ textDecoration: "none" }}>
+        <Eyebrow>Video overview (~40 min)</Eyebrow>
+        <div className="display text-2xl text-ink mt-3 mb-2">Spec Kit — official walkthrough</div>
+        <p className="text-ink-2 text-sm leading-relaxed">GitHub's own demo. Watch the workflow end to end. Especially useful for engineers who want to see the IDE experience.</p>
+        <div className="mt-4 mono text-xs text-amber">youtube.com/watch?v=a9eR1xsfvHg ↗</div>
+      </a>
+
+      <a className="card p-7 block" href="https://github.com/github/spec-kit/blob/main/spec-driven.md" target="_blank" rel="noopener" style={{ textDecoration: "none" }}>
+        <Eyebrow>The methodology brief</Eyebrow>
+        <div className="display text-2xl text-ink mt-3 mb-2">spec-driven.md</div>
+        <p className="text-ink-2 text-sm leading-relaxed">The full SDD philosophy and the nine constitution articles, written by the spec-kit authors. Recommended reading if you want the deep version.</p>
+        <div className="mt-4 mono text-xs text-amber">spec-driven.md ↗</div>
+      </a>
+
+      <a className="card p-7 block" href="https://github.github.io/spec-kit/" target="_blank" rel="noopener" style={{ textDecoration: "none" }}>
+        <Eyebrow>Documentation</Eyebrow>
+        <div className="display text-2xl text-ink mt-3 mb-2">Official docs</div>
+        <p className="text-ink-2 text-sm leading-relaxed">Reference for every command, every template field, every supported AI agent (Claude Code, Copilot, Cursor, Gemini, ...).</p>
+        <div className="mt-4 mono text-xs text-amber">github.github.io/spec-kit ↗</div>
+      </a>
+    </div>
+
+  </Section>
+);
+
+/* ----- Footer ----- */
+const Footer = () => (
+  <footer>
+    <div className="max-w-6xl mx-auto px-6 md:px-10 py-10">
+      <div className="flex justify-between items-center text-xs mono text-ink-faint pt-4 border-t border-line">
+        <span>Spec-Driven Development · Workshop learning guide</span>
+        <span></span>
+      </div>
+    </div>
+  </footer>
+);
+
+/* ----- Mount ----- */
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

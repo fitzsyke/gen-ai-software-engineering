@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>KYC API Technology Decision - Python selected</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js" crossorigin></script>
+<style>
+  :root {
+    --paper: #ffffff;
+    --paper-2: #F5F5F5;
+    --paper-3: #E1E1E1;
+    --ink: #241F20;
+    --ink-2: #4a5464;
+    --ink-3: #728197;
+    --ink-faint: #9C9C9C;
+    --amber: #133EF8;
+    --amber-2: #00b2ff;
+    --amber-soft: #e8eeff;
+    --sage: #00b2ff;
+    --sage-soft: #e6f7ff;
+    --rust: #FF4550;
+    --line: #E1E1E1;
+    --line-soft: #F5F5F5;
+  }
+
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 30% at 80% 0%, rgba(19,62,248,0.06), transparent 60%),
+      radial-gradient(ellipse 60% 30% at 0% 100%, rgba(0,178,255,0.05), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  .display { font-family: "Inter", system-ui, sans-serif; letter-spacing: -0.01em; }
+  .display-tight { font-family: "Inter", system-ui, sans-serif; letter-spacing: -0.02em; }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+  .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+  .text-paper { color: var(--paper); }
+  .text-ink { color: var(--ink); }
+  .text-ink-2 { color: var(--ink-2); }
+  .text-ink-3 { color: var(--ink-3); }
+  .text-ink-faint { color: var(--ink-faint); }
+  .text-amber { color: var(--amber); }
+  .text-sage { color: var(--sage); }
+  .text-rust { color: var(--rust); }
+
+  .bg-paper { background: var(--paper); }
+  .bg-paper-2 { background: var(--paper-2); }
+  .bg-amber-soft { background: var(--amber-soft); }
+  .border-line { border-color: var(--line); }
+  .ruled { border-bottom: 1px solid var(--line); }
+
+  .marker-amber {
+    background: linear-gradient(180deg, transparent 60%, var(--amber-soft) 60%, var(--amber-soft) 92%, transparent 92%);
+    padding: 0 3px;
+  }
+
+  .marker-sage {
+    background: linear-gradient(180deg, transparent 60%, var(--sage-soft) 60%, var(--sage-soft) 92%, transparent 92%);
+    padding: 0 3px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .chip-amber {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: rgba(19,62,248,0.06);
+  }
+
+  .chip-sage {
+    border-color: var(--sage);
+    color: var(--sage);
+    background: rgba(0,178,255,0.06);
+  }
+
+  .chip-rust {
+    border-color: var(--rust);
+    color: var(--rust);
+    background: rgba(255,69,80,0.06);
+  }
+
+  .drop {
+    width: 9px;
+    height: 9px;
+    background: var(--amber);
+    transform: rotate(45deg);
+    display: inline-block;
+  }
+
+  .card {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card:hover {
+    border-color: var(--ink-3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(36,31,32,0.06);
+  }
+
+  .card-strong {
+    background: var(--paper);
+    border-color: var(--ink);
+    box-shadow: 0 1px 0 var(--ink);
+  }
+
+  .stickynav {
+    position: fixed;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 10px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+
+  .stickynav a {
+    width: 24px;
+    height: 2px;
+    background: var(--ink-faint);
+    display: block;
+    transition: all 0.2s ease;
+  }
+
+  .stickynav a:hover,
+  .stickynav a.active {
+    width: 40px;
+    background: var(--amber);
+  }
+
+  @media (max-width: 1100px) {
+    .stickynav { display: none; }
+  }
+
+  .codeblock {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 6px;
+    padding: 18px 20px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+
+  .codeblock .cmd { color: var(--amber-soft); }
+  .codeblock .ok { color: #b8d4be; }
+  .codeblock .warn { color: #e8a86b; }
+  .codeblock .dim { color: #8a8472; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.show {
+    opacity: 1;
+    transform: none;
+  }
+
+  .decision-grid {
+    background-image: linear-gradient(var(--line-soft) 1px, transparent 1px), linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .choice-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  .choice-pill.selected {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .scorebar {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--paper-3);
+    overflow: hidden;
+  }
+
+  .scorebar > span {
+    display: block;
+    height: 100%;
+    background: var(--amber);
+    border-radius: 999px;
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-left: 28px;
+    padding-bottom: 28px;
+    border-left: 2px solid var(--line);
+  }
+
+  .timeline-item:last-child {
+    border-left-color: transparent;
+    padding-bottom: 0;
+  }
+
+  .timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+  }
+
+  .timeline-item.selected::before {
+    background: var(--amber);
+    border-color: var(--amber);
+  }
+
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateY(18px) rotate(-1deg); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .hero-card {
+    animation: floatIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .hero-card:nth-child(2) { animation-delay: 0.12s; }
+  .hero-card:nth-child(3) { animation-delay: 0.22s; }
+
+  @media print {
+    .stickynav { display: none; }
+    body { background-image: none; }
+  }
+</style>
+</head>
+<body class="min-h-screen">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useEffect, useState } = React;
+
+const NAV = [
+  { id: "decision", label: "Decision" },
+  { id: "context", label: "Context" },
+  { id: "alternatives", label: "Alternatives" },
+  { id: "comparison", label: "Comparison" },
+  { id: "why-python", label: "Why Python" },
+  { id: "implications", label: "Implementation" },
+  { id: "next", label: "Next steps" }
+];
+
+const SPEC_SIGNALS = [
+  ["FastAPI endpoints", "The implementation notes explicitly call for FastAPI and automatic documentation."],
+  ["Pydantic models", "Request and response validation is expected to use Pydantic models."],
+  ["Python 3.12+", "The spec names Python 3.12+, type hints, and PEP 8 as implementation constraints."],
+  ["pydantic-settings", "Environment configuration is expected to use pydantic-settings."],
+  ["Schemathesis", "Contract testing is specified with Schemathesis against OpenAPI 3.1."],
+  ["Azure containers", "Deployment is container-first, so Python fits AKS, App Service, and Container Apps."]
+];
+
+const ALTERNATIVES = [
+  {
+    name: "Python / FastAPI",
+    verdict: "Selected",
+    tone: "selected",
+    score: 94,
+    summary: "Best match for the written specification and fastest route to a working KYC API.",
+    strengths: ["Native fit for FastAPI and Pydantic", "Compact validation and OpenAPI workflow", "Fast workshop implementation"],
+    risks: ["Needs typing discipline", "CPU-heavy workflows may need workers"]
+  },
+  {
+    name: "Java / Spring Boot",
+    verdict: "Viable alternative",
+    tone: "warning",
+    score: 78,
+    summary: "Strong enterprise option, especially for banking teams standardized on JVM services.",
+    strengths: ["Mature Spring Security", "Strong compile-time guarantees", "Excellent enterprise operations"],
+    risks: ["Requires rewriting the spec", "More boilerplate for a workshop build"]
+  },
+  {
+    name: ".NET / ASP.NET Core",
+    verdict: "Not selected",
+    tone: "neutral",
+    score: 70,
+    summary: "Technically strong on Azure, but outside the current spec and workshop knowledge path.",
+    strengths: ["Excellent Azure integration", "Strong performance", "Good enterprise tooling"],
+    risks: ["No current spec alignment", "Would change examples, tests, and file layout"]
+  }
+];
+
+const COMPARISON = [
+  ["Spec alignment", "Direct match: FastAPI, Pydantic, Python 3.12, PEP 8, Schemathesis.", "Requires translation to Spring Boot, Bean Validation, JUnit, and Spring tooling.", "Python"],
+  ["OpenAPI workflow", "FastAPI generates docs and schemas from typed route contracts.", "springdoc-openapi is mature but requires more annotations and conventions.", "Python"],
+  ["Security", "JWT and RBAC are straightforward, with Entra integration added in later phases.", "Spring Security is more mature and policy-rich for enterprise identity.", "Java"],
+  ["Delivery speed", "Fewer files, less ceremony, faster iteration for the workshop scope.", "More explicit layers and configuration, but slower initial build.", "Python"],
+  ["Runtime scale", "Good for IO-bound APIs; use workers for CPU-heavy OCR/compliance jobs.", "Strong sustained throughput and JVM tuning for high-traffic services.", "Java"],
+  ["Azure deployment", "Containerized FastAPI runs well on AKS, App Service, and Container Apps.", "Spring Boot also runs very well across Azure compute options.", "Tie"],
+  ["Testing", "pytest plus Schemathesis maps directly to the low-level tasks.", "JUnit, REST Assured, Spring Cloud Contract, and Testcontainers are robust but different.", "Python"]
+];
+
+const DECISION_REASONS = [
+  {
+    title: "The spec is already Python-shaped",
+    text: "The source specification names FastAPI, Pydantic, pydantic-settings, Python 3.12, PEP 8, and Schemathesis. Selecting Python preserves the intent of the document instead of forcing a stack translation first."
+  },
+  {
+    title: "OpenAPI remains the source of truth",
+    text: "FastAPI keeps request models, response models, validation, generated docs, and contract testing close together. That matches the spec-driven workflow for this workshop."
+  },
+  {
+    title: "The KYC domain benefits from compact validation",
+    text: "Customer identity, document metadata, compliance checks, risk scoring, and error responses can be expressed clearly with typed Pydantic models and Decimal-safe fields."
+  },
+  {
+    title: "Azure deployment is not a blocker",
+    text: "The API is containerized, so Python can be deployed through the same phased Azure plan: local Docker, ACR, AKS or App Service, APIM, Key Vault, App Insights, and production hardening."
+  }
+];
+
+const IMPLEMENTATION_MAP = [
+  ["API framework", "FastAPI app in src/api.py with health, readiness, customer, document, verification, and compliance endpoints."],
+  ["Data contracts", "Pydantic models in src/models.py, with Decimal for monetary values and explicit PII validation rules."],
+  ["Configuration", "pydantic-settings in src/config.py for APP_ENV, DEPLOY_PHASE, feature flags, version, and Git SHA."],
+  ["Security", "JWT authentication in src/auth.py for early phases, then Entra-issued tokens from phase 3 onward."],
+  ["Contract testing", "Schemathesis tests against specs/kyc-api.yaml plus focused pytest integration coverage."],
+  ["Cloud rollout", "Docker image promoted through phase-tagged Azure environments with Bicep parameter files and CI gates."]
+];
+
+const NEXT_STEPS = [
+  "Keep Python as the implementation language in the project specification.",
+  "Generate specs/kyc-api.yaml as the OpenAPI 3.1 source of truth.",
+  "Implement Pydantic models and FastAPI endpoints from the OpenAPI contract.",
+  "Add authentication, audit logging, document verification, and compliance services.",
+  "Wire pytest and Schemathesis into CI before the Azure phase 2 test deployment.",
+  "Preserve the Java decision as an alternative in documentation, not as an active implementation path."
+];
+
+function useReveal() {
+  useEffect(() => {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+function useActiveSection(ids) {
+  const [active, setActive] = useState(ids[0]);
+  useEffect(() => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) setActive(entry.target.id);
+      });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+    return () => obs.disconnect();
+  }, [ids]);
+  return active;
+}
+
+const Eyebrow = ({ children, color }) => (
+  <div className="mono text-xs uppercase tracking-[0.18em]" style={{ color: color || "var(--ink-3)" }}>{children}</div>
+);
+
+const Section = ({ id, eyebrow, title, lede, children, wide = false }) => (
+  <section id={id} className="relative ruled">
+    <div className={`${wide ? "max-w-screen-xl" : "max-w-5xl"} mx-auto px-6 md:px-10 py-16 md:py-24 relative`}>
+      <div className="relative z-10">
+        {eyebrow && <div className="reveal mb-5"><Eyebrow>{eyebrow}</Eyebrow></div>}
+        {title && (
+          <h2 className="display-tight text-2xl md:text-4xl text-ink leading-[1.1] mb-6 reveal" style={{ maxWidth: "30ch" }}>
+            {title}
+          </h2>
+        )}
+        {lede && <p className="text-ink-2 text-base md:text-lg leading-relaxed mb-12 reveal" style={{ maxWidth: "64ch" }}>{lede}</p>}
+        {children}
+      </div>
+    </div>
+  </section>
+);
+
+const Nav = ({ active }) => (
+  <nav className="stickynav" aria-label="Section navigation">
+    {NAV.map(item => (
+      <a key={item.id} href={`#${item.id}`} className={active === item.id ? "active" : ""} title={item.label} />
+    ))}
+  </nav>
+);
+
+const Header = () => (
+  <header className="ruled">
+    <div className="max-w-6xl mx-auto px-6 md:px-10 py-4 flex items-center justify-between text-xs">
+      <div className="flex items-center gap-3 mono">
+        <span className="drop"></span>
+        <span className="text-ink font-medium">KYC API SPECIFICATION</span>
+        <span className="text-ink-faint hidden md:inline">- technology decision record</span>
+      </div>
+      <div className="text-ink-faint hidden md:block mono">Python selected</div>
+    </div>
+  </header>
+);
+
+const HeroVisual = () => (
+  <div className="decision-grid border border-line rounded-lg p-5 bg-paper">
+    <div className="grid gap-3">
+      <div className="hero-card card card-strong p-4">
+        <div className="chip chip-amber mb-3">Selected stack</div>
+        <div className="display text-3xl leading-none text-ink">Python</div>
+        <div className="mono text-xs text-amber mt-2">FastAPI + Pydantic</div>
+      </div>
+      <div className="hero-card card p-4 ml-8">
+        <div className="chip mb-3">Alternative</div>
+        <div className="display text-2xl text-ink-2">Java</div>
+        <div className="mono text-xs text-ink-3 mt-2">Spring Boot</div>
+      </div>
+      <div className="hero-card card p-4 mr-8">
+        <div className="chip mb-3">Decision driver</div>
+        <div className="text-sm text-ink-2 leading-relaxed">Minimize rewrite effort and keep OpenAPI, validation, tests, and deployment aligned with the existing spec.</div>
+      </div>
+    </div>
+  </div>
+);
+
+const Opening = () => (
+  <section id="decision" className="ruled">
+    <div className="max-w-6xl mx-auto px-6 md:px-10 pt-10 pb-14 md:pt-14 md:pb-20">
+      <div className="grid md:grid-cols-12 gap-10 items-center">
+        <div className="md:col-span-7">
+          <div className="reveal mb-3 inline-block" style={{ background: "rgba(19,62,248,0.08)", border: "1px dashed var(--amber)", borderRadius: 4, padding: "4px 12px" }}>
+            <span className="mono text-xs uppercase tracking-wider text-amber font-medium">Architecture decision</span>
+          </div>
+          <h1 className="display-tight text-4xl md:text-6xl lg:text-7xl text-ink leading-[0.96] reveal" style={{ fontWeight: 400 }}>
+            Build the KYC API<br/>
+            with <span className="marker-amber">Python</span>,<br/>
+            not Java.
+          </h1>
+          <p className="mt-6 text-base md:text-lg text-ink-2 reveal" style={{ maxWidth: "58ch", lineHeight: 1.55 }}>
+            Python is selected because the current specification is already designed around FastAPI,
+            Pydantic, Python 3.12, pydantic-settings, and Schemathesis. Java remains a strong
+            enterprise alternative, but it would require a stack rewrite before implementation.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3 reveal">
+            <span className="choice-pill selected">Decision: Python / FastAPI</span>
+            <span className="choice-pill">Alternative: Java / Spring Boot</span>
+            <span className="choice-pill">Target: Azure phased rollout</span>
+          </div>
+        </div>
+        <div className="md:col-span-5 reveal">
+          <HeroVisual />
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const ContextSection = () => (
+  <Section
+    id="context"
+    eyebrow="Source specification"
+    title="The current KYC spec already points to a Python implementation."
+    lede="This decision does not start from a blank page. The existing specification names concrete Python tools and low-level tasks, so selecting Python preserves the original delivery path."
+  >
+    <div className="grid md:grid-cols-3 gap-4 reveal">
+      {SPEC_SIGNALS.map(([title, text], i) => (
+        <div key={title} className="card p-5" style={{ background: i < 3 ? "var(--paper)" : "var(--paper-2)" }}>
+          <div className="mono text-xs num text-ink-faint mb-3">{String(i + 1).padStart(2, "0")}</div>
+          <div className="font-medium text-ink mb-2">{title}</div>
+          <p className="text-sm text-ink-2 leading-relaxed">{text}</p>
+        </div>
+      ))}
+    </div>
+
+    <div className="reveal mt-10 codeblock">
+      <div><span className="dim"># Specification signals</span></div>
+      <div><span className="cmd">framework</span>: FastAPI</div>
+      <div><span className="cmd">models</span>: Pydantic</div>
+      <div><span className="cmd">runtime</span>: Python 3.12+</div>
+      <div><span className="cmd">config</span>: pydantic-settings</div>
+      <div><span className="cmd">contract-tests</span>: Schemathesis</div>
+      <div><span className="ok">decision</span>: keep the stack aligned with the spec</div>
+    </div>
+  </Section>
+);
+
+const AlternativesSection = () => (
+  <Section
+    id="alternatives"
+    wide
+    eyebrow="Alternatives considered"
+    title="Three stacks were considered. One best matches this project."
+    lede="The comparison is not about which language is universally better. It is about which stack fits this KYC API specification, workshop delivery model, and Azure deployment path."
+  >
+    <div className="grid lg:grid-cols-3 gap-5 reveal">
+      {ALTERNATIVES.map(alt => (
+        <div key={alt.name} className={`card p-6 ${alt.tone === "selected" ? "card-strong" : ""}`}>
+          <div className="flex items-start justify-between gap-4 mb-5">
+            <div>
+              <div className="display text-2xl text-ink">{alt.name}</div>
+              <div className={`chip mt-3 ${alt.tone === "selected" ? "chip-amber" : alt.tone === "warning" ? "chip-rust" : ""}`}>{alt.verdict}</div>
+            </div>
+            <div className="mono text-2xl text-ink">{alt.score}</div>
+          </div>
+          <div className="scorebar mb-5"><span style={{ width: `${alt.score}%` }}></span></div>
+          <p className="text-sm text-ink-2 leading-relaxed mb-5">{alt.summary}</p>
+          <div className="grid gap-4 text-sm">
+            <div>
+              <Eyebrow color="var(--sage)">Strengths</Eyebrow>
+              <ul className="mt-2 space-y-2 text-ink-2">
+                {alt.strengths.map(item => <li key={item}>- {item}</li>)}
+              </ul>
+            </div>
+            <div>
+              <Eyebrow color="var(--rust)">Risks</Eyebrow>
+              <ul className="mt-2 space-y-2 text-ink-2">
+                {alt.risks.map(item => <li key={item}>- {item}</li>)}
+              </ul>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Section>
+);
+
+const ComparisonSection = () => (
+  <Section
+    id="comparison"
+    wide
+    eyebrow="Python vs Java"
+    title="Python wins the project fit. Java wins some enterprise dimensions."
+    lede="Java/Spring Boot is a serious option for banking APIs. For this specific project, Python wins because it avoids translating the spec and keeps the workshop implementation compact."
+  >
+    <div className="reveal overflow-x-auto border border-line rounded-lg bg-paper">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="bg-paper-2 text-left">
+            <th className="p-4 mono text-xs uppercase tracking-wider text-ink-3">Criterion</th>
+            <th className="p-4 mono text-xs uppercase tracking-wider text-ink-3">Python / FastAPI</th>
+            <th className="p-4 mono text-xs uppercase tracking-wider text-ink-3">Java / Spring Boot</th>
+            <th className="p-4 mono text-xs uppercase tracking-wider text-ink-3">Edge</th>
+          </tr>
+        </thead>
+        <tbody>
+          {COMPARISON.map((row, i) => (
+            <tr key={row[0]} style={{ borderTop: "1px solid var(--line)" }}>
+              <td className="p-4 font-medium text-ink">{row[0]}</td>
+              <td className="p-4 text-ink-2 leading-relaxed">{row[1]}</td>
+              <td className="p-4 text-ink-2 leading-relaxed">{row[2]}</td>
+              <td className="p-4">
+                <span className={`chip ${row[3] === "Python" ? "chip-amber" : row[3] === "Java" ? "chip-rust" : "chip-sage"}`}>{row[3]}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+);
+
+const WhyPythonSection = () => (
+  <Section
+    id="why-python"
+    eyebrow="Decision rationale"
+    title="Why Python was selected."
+    lede="The decision optimizes for specification fidelity, delivery speed, validation clarity, and a direct path from OpenAPI to implementation."
+  >
+    <div className="grid md:grid-cols-2 gap-6 reveal">
+      {DECISION_REASONS.map((reason, i) => (
+        <div key={reason.title} className="card p-6" style={{ background: i === 0 ? "var(--paper)" : "var(--paper-2)", borderColor: i === 0 ? "var(--ink)" : "var(--line)" }}>
+          <div className="mono text-xs num text-amber mb-3">0{i + 1}</div>
+          <div className="display text-2xl text-ink mb-3">{reason.title}</div>
+          <p className="text-sm text-ink-2 leading-relaxed">{reason.text}</p>
+        </div>
+      ))}
+    </div>
+
+    <div className="reveal mt-10 p-6 border border-line rounded-lg bg-paper">
+      <Eyebrow color="var(--amber)">Decision statement</Eyebrow>
+      <p className="display text-2xl md:text-3xl leading-snug text-ink mt-4">
+        We will implement the KYC API in <span className="marker-amber">Python 3.12+ with FastAPI</span>,
+        using Pydantic for data validation, pydantic-settings for configuration, pytest for integration tests,
+        and Schemathesis for OpenAPI contract testing.
+      </p>
+    </div>
+  </Section>
+);
+
+const ImplicationsSection = () => (
+  <Section
+    id="implications"
+    wide
+    eyebrow="Implementation impact"
+    title="Selecting Python keeps the low-level task plan intact."
+    lede="The project can proceed from the current specification without converting file targets, framework choices, validation approach, or test strategy."
+  >
+    <div className="grid md:grid-cols-12 gap-8">
+      <div className="md:col-span-7 reveal">
+        <div className="space-y-3">
+          {IMPLEMENTATION_MAP.map(([area, detail], i) => (
+            <div key={area} className="flex gap-4 p-4 card">
+              <span className="mono text-xs num text-ink-faint w-7 flex-shrink-0">{String(i + 1).padStart(2, "0")}</span>
+              <div>
+                <div className="font-medium text-ink">{area}</div>
+                <div className="text-sm text-ink-2 leading-relaxed mt-1">{detail}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="md:col-span-5 reveal">
+        <div className="card card-strong p-6 sticky" style={{ top: 24 }}>
+          <Eyebrow color="var(--amber)">What changes?</Eyebrow>
+          <p className="mt-4 text-sm text-ink-2 leading-relaxed">
+            Nothing needs to change in the core project direction. Python confirms the current plan:
+            OpenAPI first, FastAPI endpoints, Pydantic validation, contract tests, JWT auth, audit logging,
+            and phased Azure deployment.
+          </p>
+          <div className="mt-6 pt-5" style={{ borderTop: "1px dashed var(--amber)" }}>
+            <Eyebrow color="var(--rust)">What would Java require?</Eyebrow>
+            <p className="mt-4 text-sm text-ink-2 leading-relaxed">
+              A Java path would require rewriting the specification around Spring Boot controllers,
+              Java DTOs or records, Jakarta Bean Validation, Spring Security, JUnit, REST Assured,
+              and a Maven or Gradle Docker build.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+);
+
+const NextStepsSection = () => (
+  <Section
+    id="next"
+    eyebrow="Next steps"
+    title="Move from decision to implementation."
+    lede="The technology decision is now settled. The next project step is to generate the OpenAPI contract and implement the Python service around it."
+  >
+    <div className="grid md:grid-cols-12 gap-8">
+      <div className="md:col-span-6 reveal">
+        <div className="space-y-0">
+          {NEXT_STEPS.map((step, i) => (
+            <div key={step} className={`timeline-item ${i === 0 ? "selected" : ""}`}>
+              <div className="mono text-xs text-ink-faint mb-1">STEP {String(i + 1).padStart(2, "0")}</div>
+              <div className="text-sm text-ink-2 leading-relaxed">{step}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="md:col-span-6 reveal">
+        <div className="codeblock">
+          <div><span className="dim"># Python implementation baseline</span></div>
+          <div><span className="cmd">CREATE</span> specs/kyc-api.yaml</div>
+          <div><span className="cmd">CREATE</span> src/models.py</div>
+          <div><span className="cmd">CREATE</span> src/api.py</div>
+          <div><span className="cmd">CREATE</span> src/auth.py</div>
+          <div><span className="cmd">CREATE</span> tests/contract_tests.py</div>
+          <div><span className="cmd">CREATE</span> tests/test_kyc_api.py</div>
+          <div><span className="ok">KEEP</span> Python as the source implementation stack</div>
+        </div>
+      </div>
+    </div>
+  </Section>
+);
+
+const Footer = () => (
+  <footer className="py-10">
+    <div className="max-w-5xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between gap-4 text-xs text-ink-faint mono">
+      <span>KYC API technology decision</span>
+      <span>Python / FastAPI selected for this specification</span>
+    </div>
+  </footer>
+);
+
+function App() {
+  useReveal();
+  const active = useActiveSection(NAV.map(item => item.id));
+  return (
+    <div className="relative">
+      <Nav active={active} />
+      <Header />
+      <Opening />
+      <ContextSection />
+      <AlternativesSection />
+      <ComparisonSection />
+      <WhyPythonSection />
+      <ImplicationsSection />
+      <NextStepsSection />
+      <Footer />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

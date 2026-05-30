@@ -1,0 +1,6 @@
+customer_id,customer_email,customer_name,subject,description,category,priority,status,assigned_to,tags,metadata.source,metadata.browser,metadata.device_type
+cust-t01,alice@example.com,Alice Johnson,Cannot log in,I have been unable to access my account since yesterday evening and need help urgently.,account_access,urgent,new,,,"web_form","Chrome 120","desktop"
+cust-t02,bob@example.com,Bob Smith,Billing issue with refund,I was charged twice for my subscription this month and need a refund for the duplicate payment.,billing_question,high,new,,,"email",,
+cust-t03,carol@example.com,Carol White,App crashes on startup,The application crashes immediately after login on my desktop computer. Error shows exception.,technical_issue,high,in_progress,agent-01,"crash,bug","api","Firefox 121","desktop"
+cust-t04,dave@example.com,Dave Brown,Feature request for dark mode,It would be great if you could add dark mode support. This is a suggestion for the product team.,feature_request,low,new,,,"chat",,
+cust-t05,eve@example.com,Eve Davis,Password reset not working,I clicked forgot password but the reset email never arrives. I have been locked out for 2 days.,account_access,high,new,,,"web_form","Safari 17","mobile"

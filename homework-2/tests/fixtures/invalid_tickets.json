@@ -1,0 +1,22 @@
+{
+  "tickets": [
+    {
+      "customer_id": "",
+      "customer_email": "alice@example.com",
+      "customer_name": "Alice",
+      "subject": "Blank customer_id",
+      "description": "This ticket has a blank customer_id which should fail validation.",
+      "category": "other",
+      "priority": "low"
+    },
+    {
+      "customer_id": "cust-02",
+      "customer_email": "not-valid-email",
+      "customer_name": "Bob",
+      "subject": "Invalid email format",
+      "description": "This ticket has a malformed email address that should fail validation.",
+      "category": "other",
+      "priority": "low"
+    }
+  ]
+}

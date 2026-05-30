@@ -1,0 +1,36 @@
+{
+  "tickets": [
+    {
+      "customer_id": "cust-j01",
+      "customer_email": "alice@example.com",
+      "customer_name": "Alice Johnson",
+      "subject": "Cannot log into my account",
+      "description": "I have been unable to access my account since yesterday. The password reset is not working.",
+      "category": "account_access",
+      "priority": "urgent",
+      "tags": ["account", "login"],
+      "metadata": {"source": "web_form", "browser": "Chrome 120", "device_type": "desktop"}
+    },
+    {
+      "customer_id": "cust-j02",
+      "customer_email": "bob@example.com",
+      "customer_name": "Bob Smith",
+      "subject": "Refund request for duplicate charge",
+      "description": "I was charged twice for my subscription. Please process a refund for the duplicate payment on my credit card.",
+      "category": "billing_question",
+      "priority": "high",
+      "tags": ["billing", "refund"],
+      "metadata": {"source": "email"}
+    },
+    {
+      "customer_id": "cust-j03",
+      "customer_email": "carol@example.com",
+      "customer_name": "Carol White",
+      "subject": "App crash on mobile device",
+      "description": "The mobile application crashes every time I try to open it. I get an unhandled exception error.",
+      "category": "technical_issue",
+      "priority": "high",
+      "metadata": {"source": "chat", "device_type": "mobile"}
+    }
+  ]
+}
