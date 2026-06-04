@@ -1,5 +1,9 @@
 # 🎧 Homework 2: Intelligent Customer Support System
 
+> **Student Name**: Artem Saienko
+> **Date Submitted**: 31.05.2026
+> **AI Tools Used**: Claude Code (Sonnet 4.6, Haiku 4.5)
+
 > **Phase 1 & 2 Complete** — Multi-format ticket import API + keyword-based auto-classification
 
 **Status:** ✅ Task 1 · ✅ Task 2 · ✅ Task 3 — All phases complete  
