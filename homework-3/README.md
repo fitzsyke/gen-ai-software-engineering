@@ -1,8 +1,9 @@
 # P2P Payment Platform — Specification Package
 
-**Author:** Artem Saienko  
-**Homework:** HW-3 — Specification-Driven Design  
-**Date:** 2026-06-05
+> **Student Name**: Artem Saienko
+> **Homework:** HW-3 — Specification-Driven Design
+> **Date Submitted**: 2026-06-05
+> **AI Tools Used**: Claude Code (claude-sonnet-4-6), Gemini (gemini-flash-3.5)
 
 ---
 
