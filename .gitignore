@@ -60,3 +60,6 @@ ehthumbs.db
 
 # Claude specific files
 .claude*
+
+# Ignore all files in the workshop-*/ directories
+workshop-*/

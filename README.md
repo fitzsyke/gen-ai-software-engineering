@@ -1,3 +1,11 @@
+---
+author: Artem Saienko
+version: 0.1.0
+created: 2026-06-04T00:00:00Z
+last-modified: 2026-06-04T00:00:00Z
+version-updated: 2026-06-04T00:00:00Z
+---
+
 # 🤖 AI-Assisted Development Course — Homework Repository
 
 Welcome to the homework repository for the **GenAI and Agentic AI for Software Engineering** training course! This repository serves as a template for submitting your homework assignments throughout the program.
