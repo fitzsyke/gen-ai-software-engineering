@@ -1,0 +1,5 @@
+customer_id,customer_email,customer_name,subject,description,category,priority
+,alice@example.com,Alice,Missing customer_id,This ticket has no customer_id field which is required for creation.,account_access,urgent
+cust-02,not-an-email,Bob,Bad email address,The email address in this row is not a valid RFC-5322 email format.,billing_question,high
+cust-03,carol@example.com,Carol,Short desc,Too short.,technical_issue,medium
+cust-04,dave@example.com,Dave,Valid row with bad enum,This row has all correct fields but an invalid enum value for category.,invalid_category,low

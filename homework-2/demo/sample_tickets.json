@@ -1,0 +1,123 @@
+{
+  "tickets": [
+    {
+      "customer_id": "cust-101",
+      "customer_email": "priya@techfirm.io",
+      "customer_name": "Priya Patel",
+      "subject": "Security alert — unusual login from unknown location",
+      "description": "I received an email saying my account was accessed from an IP in a country I have never been to. I did not authorize this login. Please investigate and help me secure my account immediately.",
+      "category": "account_access",
+      "priority": "urgent",
+      "status": "new",
+      "assigned_to": null,
+      "tags": ["security", "account", "unauthorized-access"],
+      "metadata": {
+        "source": "email",
+        "browser": "Outlook",
+        "device_type": "desktop"
+      }
+    },
+    {
+      "customer_id": "cust-102",
+      "customer_email": "sam@webagency.co",
+      "customer_name": "Sam Rivera",
+      "subject": "Webhook events are being delivered with 5 minute delay",
+      "description": "Our webhook endpoint is receiving events but they are consistently 4-6 minutes late compared to when the events actually occur in the system. This is breaking our real-time pipeline.",
+      "category": "technical_issue",
+      "priority": "high",
+      "status": "in_progress",
+      "assigned_to": "agent-john",
+      "tags": ["webhook", "latency", "integration"],
+      "metadata": {
+        "source": "api",
+        "browser": null,
+        "device_type": null
+      }
+    },
+    {
+      "customer_id": "cust-103",
+      "customer_email": "linda@ecommerce.shop",
+      "customer_name": "Linda Chen",
+      "subject": "Double charged on last subscription renewal",
+      "description": "My credit card was charged twice on the same day for my annual subscription renewal. The amount is $599 and it appears twice on my bank statement dated April 1st. Please refund one charge.",
+      "category": "billing_question",
+      "priority": "high",
+      "status": "waiting_customer",
+      "assigned_to": "agent-sarah",
+      "tags": ["billing", "duplicate-charge", "refund"],
+      "metadata": {
+        "source": "web_form",
+        "browser": "Chrome 124",
+        "device_type": "desktop"
+      }
+    },
+    {
+      "customer_id": "cust-104",
+      "customer_email": "omar@devteam.net",
+      "customer_name": "Omar Hassan",
+      "subject": "Add support for webhooks on ticket status changes",
+      "description": "We would like to receive a webhook notification whenever a ticket status changes. This would allow us to sync our internal CRM automatically without polling the API every minute.",
+      "category": "feature_request",
+      "priority": "medium",
+      "status": "new",
+      "assigned_to": null,
+      "tags": ["feature", "webhook", "api"],
+      "metadata": {
+        "source": "api",
+        "browser": null,
+        "device_type": null
+      }
+    },
+    {
+      "customer_id": "cust-105",
+      "customer_email": "rachel@healthcare.org",
+      "customer_name": "Rachel Kim",
+      "subject": "Search function returns incorrect results for special characters",
+      "description": "When I search for tickets containing ampersands or apostrophes the search returns no results even though I can see matching tickets in the list. For example searching for O'Brien returns nothing.",
+      "category": "bug_report",
+      "priority": "medium",
+      "status": "in_progress",
+      "assigned_to": "agent-sarah",
+      "tags": ["bug", "search", "encoding"],
+      "metadata": {
+        "source": "chat",
+        "browser": "Firefox 123",
+        "device_type": "desktop"
+      }
+    },
+    {
+      "customer_id": "cust-106",
+      "customer_email": "james@logistics.com",
+      "customer_name": "James Walker",
+      "subject": "Need to transfer account ownership to new admin",
+      "description": "Our original account owner has left the company and we need to transfer account ownership to our new IT manager. The current owner is unreachable. Please advise on the process.",
+      "category": "account_access",
+      "priority": "high",
+      "status": "new",
+      "assigned_to": null,
+      "tags": ["account", "ownership", "admin"],
+      "metadata": {
+        "source": "email",
+        "browser": null,
+        "device_type": "desktop"
+      }
+    },
+    {
+      "customer_id": "cust-107",
+      "customer_email": "nina@startup.ai",
+      "customer_name": "Nina Johansson",
+      "subject": "Mobile app freezes when uploading attachments over 5MB",
+      "description": "The iOS app completely freezes when I try to attach a file larger than approximately 5MB to a ticket. I have to force-quit the app and the attachment is lost. Tested on iPhone 15 Pro with iOS 17.4.",
+      "category": "bug_report",
+      "priority": "high",
+      "status": "new",
+      "assigned_to": null,
+      "tags": ["bug", "mobile", "ios", "upload"],
+      "metadata": {
+        "source": "chat",
+        "browser": "Safari 17",
+        "device_type": "mobile"
+      }
+    }
+  ]
+}

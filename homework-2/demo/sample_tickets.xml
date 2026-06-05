@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sample_tickets.xml — Demo tickets for testing the XML import endpoint.
+
+  Structure: <tickets> root with one <ticket> element per record.
+  Tags can be written as:
+    • Repeated <tag> children:   <tags><tag>billing</tag><tag>refund</tag></tags>
+    • Comma string (alternative): <tags>billing,refund</tags>
+  Metadata is a nested element with sub-fields.
+
+  Import with:
+    curl -X POST http://localhost:8000/tickets/import \
+         -F "file=@demo/sample_tickets.xml"
+-->
+<tickets>
+
+  <ticket>
+    <customer_id>cust-201</customer_id>
+    <customer_email>alex@fintech.io</customer_email>
+    <customer_name>Alex Morgan</customer_name>
+    <subject>Production database connection keeps dropping</subject>
+    <description>Our production environment is losing its database connection every 2-3 hours and requires a manual restart to recover. This is causing serious downtime. We are on the Enterprise plan and this started 3 days ago.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <status>in_progress</status>
+    <assigned_to>agent-john</assigned_to>
+    <tags>
+      <tag>production</tag>
+      <tag>database</tag>
+      <tag>downtime</tag>
+    </tags>
+    <metadata>
+      <source>phone</source>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+
+  <ticket>
+    <customer_id>cust-202</customer_id>
+    <customer_email>beth@consultancy.co</customer_email>
+    <customer_name>Beth Sullivan</customer_name>
+    <subject>Annual plan renewal failed — card was charged but no confirmation</subject>
+    <description>My annual renewal was processed and I can see the charge of $1188 on my credit card statement but I have not received a confirmation email and my account shows expiring tomorrow. Please confirm the renewal went through.</description>
+    <category>billing_question</category>
+    <priority>urgent</priority>
+    <status>new</status>
+    <assigned_to></assigned_to>
+    <tags>
+      <tag>billing</tag>
+      <tag>renewal</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Chrome 124</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+
+  <ticket>
+    <customer_id>cust-203</customer_id>
+    <customer_email>carlos@agency.mx</customer_email>
+    <customer_name>Carlos Mendez</customer_name>
+    <subject>Password reset emails not arriving</subject>
+    <description>I requested a password reset three times over the past hour and have not received any email. I have checked my spam folder. Other emails from your domain arrive fine. This is blocking me from accessing my account.</description>
+    <category>account_access</category>
+    <priority>high</priority>
+    <status>new</status>
+    <assigned_to></assigned_to>
+    <tags>password,email,account</tags>
+    <metadata>
+      <source>chat</source>
+      <browser>Firefox 123</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+
+  <ticket>
+    <customer_id>cust-204</customer_id>
+    <customer_email>diana@elearning.edu</customer_email>
+    <customer_name>Diana Foster</customer_name>
+    <subject>Request: Export tickets to PDF format</subject>
+    <description>Currently we can only export tickets to CSV. It would be very helpful to also support PDF export with our company branding for sharing with non-technical stakeholders and for audit purposes.</description>
+    <category>feature_request</category>
+    <priority>low</priority>
+    <status>new</status>
+    <assigned_to></assigned_to>
+    <tags>
+      <tag>feature</tag>
+      <tag>export</tag>
+      <tag>pdf</tag>
+    </tags>
+    <metadata>
+      <source>email</source>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+
+  <ticket>
+    <customer_id>cust-205</customer_id>
+    <customer_email>evan@saas.io</customer_email>
+    <customer_name>Evan Torres</customer_name>
+    <subject>Incorrect tax calculation on EU invoices</subject>
+    <description>Our invoices for EU customers are not applying the correct VAT rate. UK customers should have 20% VAT and German customers should have 19% but all EU invoices are showing 0% VAT. This started after your billing system update last Tuesday.</description>
+    <category>billing_question</category>
+    <priority>high</priority>
+    <status>in_progress</status>
+    <assigned_to>agent-sarah</assigned_to>
+    <tags>billing,tax,eu,vat</tags>
+    <metadata>
+      <source>api</source>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+
+  <ticket>
+    <customer_id>cust-206</customer_id>
+    <customer_email>fiona@retailco.com</customer_email>
+    <customer_name>Fiona Campbell</customer_name>
+    <subject>Notification emails showing raw HTML instead of formatted content</subject>
+    <description>All notification emails I receive now show raw HTML tags instead of formatted text. For example I see p Hello Fiona /p instead of the formatted greeting. This makes the emails unreadable and looks unprofessional to our clients.</description>
+    <category>bug_report</category>
+    <priority>medium</priority>
+    <status>new</status>
+    <assigned_to></assigned_to>
+    <tags>
+      <tag>bug</tag>
+      <tag>email</tag>
+      <tag>html</tag>
+    </tags>
+    <metadata>
+      <source>email</source>
+      <browser>Outlook</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+
+  <ticket>
+    <customer_id>cust-207</customer_id>
+    <customer_email>george@manufacturing.net</customer_email>
+    <customer_name>George Nakamura</customer_name>
+    <subject>Android app does not support fingerprint authentication</subject>
+    <description>The iOS app supports Face ID login but the Android app only has username and password. Our security policy requires biometric authentication for all mobile access. Can fingerprint or face unlock be added to the Android app?</description>
+    <category>feature_request</category>
+    <priority>medium</priority>
+    <status>new</status>
+    <assigned_to></assigned_to>
+    <tags>
+      <tag>feature</tag>
+      <tag>android</tag>
+      <tag>biometric</tag>
+      <tag>security</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Chrome 124</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+
+</tickets>

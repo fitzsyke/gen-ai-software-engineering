@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>cust-x01</customer_id>
+    <customer_email>alice@example.com</customer_email>
+    <customer_name>Alice Johnson</customer_name>
+    <subject>Cannot log into my account</subject>
+    <description>I have been unable to access my account since yesterday. Password reset is not working.</description>
+    <category>account_access</category>
+    <priority>urgent</priority>
+    <tags>
+      <tag>account</tag>
+      <tag>login</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Chrome 120</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust-x02</customer_id>
+    <customer_email>bob@example.com</customer_email>
+    <customer_name>Bob Smith</customer_name>
+    <subject>Billing question about my invoice</subject>
+    <description>I have a question about the recent charge on my account. The invoice does not match what I expected to pay.</description>
+    <category>billing_question</category>
+    <priority>medium</priority>
+    <tags>billing,invoice</tags>
+    <metadata>
+      <source>email</source>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust-x03</customer_id>
+    <customer_email>carol@example.com</customer_email>
+    <customer_name>Carol White</customer_name>
+    <subject>Server error when uploading files</subject>
+    <description>I receive a 500 server error every time I try to upload a file. The issue started after the recent update.</description>
+    <category>technical_issue</category>
+    <priority>high</priority>
+    <metadata>
+      <source>api</source>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+</tickets>
