@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "service": "github",
+      "username": "alice",
+      "password": "gAAAAABqRrnXEYAGW2LB8gWhlb9YSV-bZ-s5gdxGJmH40_KirdNUJ-SR2vuIGOTGARQjlzHNewZmvb8t9JQYJOP8OLuYevnRoA==",
+      "created_at": "2026-07-02T19:19:51.106987+00:00",
+      "updated_at": "2026-07-02T19:19:51.485912+00:00"
+    },
+    {
+      "service": "gitlab",
+      "username": "bob",
+      "password": "gAAAAABqRrnXQNPWjrXrWetqdTG1907FDh_dEhR3gQk8pPhoc--rairsNAYHMT3TE4Ur1PM2kgagLivtJc1NIRc61BKVIlM8og==",
+      "created_at": "2026-07-02T19:19:51.202894+00:00"
+    }
+  ]
+}
