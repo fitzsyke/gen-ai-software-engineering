@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Transaction Pipeline Dashboard</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; background: #0e1116; color: #e6e6e6; }
+    h1 { font-size: 1.4rem; }
+    .summary { display: flex; gap: 1rem; margin: 1rem 0 2rem; }
+    .card { background: #1a1f28; border-radius: 8px; padding: 1rem 1.5rem; min-width: 110px; }
+    .card .n { font-size: 1.8rem; font-weight: 700; }
+    .card .label { font-size: 0.8rem; color: #9aa4b2; text-transform: uppercase; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #2a303c; font-size: 0.9rem; }
+    th { color: #9aa4b2; font-weight: 600; }
+    .status { padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; }
+    .status-settled { background: #16382a; color: #4ade80; }
+    .status-flagged { background: #3a2c14; color: #fbbf24; }
+    .status-rejected { background: #3a1616; color: #f87171; }
+    button { background: #2563eb; color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.9rem; }
+    button:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <h1>Transaction Processing Pipeline</h1>
+  <button onclick="runPipeline()">Run Pipeline</button>
+
+  <div class="summary">
+    {% if summary %}
+    <div class="card"><div class="n">{{ summary.total }}</div><div class="label">Total</div></div>
+    {% for status, count in summary.counts_by_status.items() %}
+    <div class="card"><div class="n">{{ count }}</div><div class="label">{{ status }}</div></div>
+    {% endfor %}
+    {% else %}
+    <p>No pipeline run yet. Click "Run Pipeline" above.</p>
+    {% endif %}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Transaction ID</th><th>Status</th><th>Amount</th><th>Currency</th><th>Detail</th>
+      </tr>
+    </thead>
+    <tbody id="results-body">
+      {% for r in results %}
+      <tr>
+        <td>{{ r.transaction_id }}</td>
+        <td><span class="status status-{{ r.status }}">{{ r.status }}</span></td>
+        <td>{{ r.amount }}</td>
+        <td>{{ r.currency }}</td>
+        <td>
+          {% if r.status == 'rejected' %}{{ r.reason }}{% endif %}
+          {% if r.status == 'flagged' %}risk_score={{ r.risk_score }} ({{ r.risk_factors|join(', ') }}){% endif %}
+          {% if r.status == 'settled' %}settled_at={{ r.settled_at }}{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    async function runPipeline() {
+      const res = await fetch('/api/run', { method: 'POST' });
+      if (res.ok) location.reload();
+    }
+  </script>
+</body>
+</html>

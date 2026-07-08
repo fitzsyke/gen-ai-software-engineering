@@ -1,0 +1,73 @@
+- generic [active] [ref=e1]:
+  - heading "Transaction Processing Pipeline" [level=1] [ref=e2]
+  - button "Run Pipeline" [ref=e3] [cursor=pointer]
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: "8"
+      - generic [ref=e7]: Total
+    - generic [ref=e8]:
+      - generic [ref=e9]: "4"
+      - generic [ref=e10]: settled
+    - generic [ref=e11]:
+      - generic [ref=e12]: "3"
+      - generic [ref=e13]: flagged
+    - generic [ref=e14]:
+      - generic [ref=e15]: "1"
+      - generic [ref=e16]: rejected
+  - table [ref=e17]:
+    - rowgroup [ref=e18]:
+      - row "Transaction ID Status Amount Currency Detail" [ref=e19]:
+        - columnheader "Transaction ID" [ref=e20]
+        - columnheader "Status" [ref=e21]
+        - columnheader "Amount" [ref=e22]
+        - columnheader "Currency" [ref=e23]
+        - columnheader "Detail" [ref=e24]
+    - rowgroup [ref=e25]:
+      - row "TXN001 settled 1500.00 USD settled_at=2026-07-08T11:14:16Z" [ref=e26]:
+        - cell "TXN001" [ref=e27]
+        - cell "settled" [ref=e28]
+        - cell "1500.00" [ref=e29]
+        - cell "USD" [ref=e30]
+        - cell "settled_at=2026-07-08T11:14:16Z" [ref=e31]
+      - row "TXN002 flagged 25000.00 USD risk_score=60 (high_value)" [ref=e32]:
+        - cell "TXN002" [ref=e33]
+        - cell "flagged" [ref=e34]
+        - cell "25000.00" [ref=e35]
+        - cell "USD" [ref=e36]
+        - cell "risk_score=60 (high_value)" [ref=e37]
+      - row "TXN003 settled 9999.99 USD settled_at=2026-07-08T11:14:16Z" [ref=e38]:
+        - cell "TXN003" [ref=e39]
+        - cell "settled" [ref=e40]
+        - cell "9999.99" [ref=e41]
+        - cell "USD" [ref=e42]
+        - cell "settled_at=2026-07-08T11:14:16Z" [ref=e43]
+      - row "TXN004 flagged 500.00 EUR risk_score=60 (cross_border, off_hours)" [ref=e44]:
+        - cell "TXN004" [ref=e45]
+        - cell "flagged" [ref=e46]
+        - cell "500.00" [ref=e47]
+        - cell "EUR" [ref=e48]
+        - cell "risk_score=60 (cross_border, off_hours)" [ref=e49]
+      - row "TXN005 flagged 75000.00 USD risk_score=60 (high_value)" [ref=e50]:
+        - cell "TXN005" [ref=e51]
+        - cell "flagged" [ref=e52]
+        - cell "75000.00" [ref=e53]
+        - cell "USD" [ref=e54]
+        - cell "risk_score=60 (high_value)" [ref=e55]
+      - row "TXN006 rejected 200.00 XYZ invalid_currency" [ref=e56]:
+        - cell "TXN006" [ref=e57]
+        - cell "rejected" [ref=e58]
+        - cell "200.00" [ref=e59]
+        - cell "XYZ" [ref=e60]
+        - cell "invalid_currency" [ref=e61]
+      - row "TXN007 settled -100.00 GBP settled_at=2026-07-08T11:14:16Z" [ref=e62]:
+        - cell "TXN007" [ref=e63]
+        - cell "settled" [ref=e64]
+        - cell "-100.00" [ref=e65]
+        - cell "GBP" [ref=e66]
+        - cell "settled_at=2026-07-08T11:14:16Z" [ref=e67]
+      - row "TXN008 settled 3200.00 USD settled_at=2026-07-08T11:14:16Z" [ref=e68]:
+        - cell "TXN008" [ref=e69]
+        - cell "settled" [ref=e70]
+        - cell "3200.00" [ref=e71]
+        - cell "USD" [ref=e72]
+        - cell "settled_at=2026-07-08T11:14:16Z" [ref=e73]
