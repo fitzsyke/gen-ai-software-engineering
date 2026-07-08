@@ -68,4 +68,7 @@ def api_run():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    # Port 5000 collides with macOS AirPlay Receiver on the IPv6 loopback
+    # (localhost resolves to ::1 first), which returns a 403 before Flask
+    # ever sees the request. 5050 avoids that entirely.
+    app.run(debug=True, port=5050)

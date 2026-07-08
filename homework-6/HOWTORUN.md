@@ -31,7 +31,9 @@ python -m pipeline.validator --dry-run sample-transactions.json
 python frontend/app.py
 ```
 
-Open `http://localhost:5000` in a browser. The dashboard shows the latest `shared/results/` contents and has a "Run Pipeline" button that re-runs the pipeline and refreshes the page.
+Open `http://127.0.0.1:5050` in a browser. The dashboard shows the latest `shared/results/` contents and has a "Run Pipeline" button that re-runs the pipeline and refreshes the page.
+
+(Port 5050 is used instead of the Flask default 5000 because macOS AirPlay Receiver also listens on port 5000 over IPv6 and will intercept `localhost` requests with an unrelated 403 before they reach Flask.)
 
 ## 4. Run the Tests and View Coverage
 
