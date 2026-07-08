@@ -1,0 +1,195 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - generic [ref=f4e3]:
+      - generic [ref=f4e4]: Capstone Project
+      - heading "AI-Powered Transaction Processing Pipeline" [level=1] [ref=f4e5]:
+        - text: AI-Powered Transaction
+        - text: Processing Pipeline
+      - generic [ref=f4e6]: "A four-agent AI workflow: Specification → Code Generation → Unit Tests → Documentation"
+      - generic [ref=f4e7]: Created by Artem Saienko
+    - generic [ref=f4e8]:
+      - generic [ref=f4e9]: Transaction Processing Pipeline Capstone
+      - generic [ref=f4e10]: 1 / 9
+  - generic [ref=f4e11]:
+    - heading "Project Overview" [level=2] [ref=f4e12]
+    - generic [ref=f4e13]:
+      - list [ref=f4e14]:
+        - listitem [ref=f4e15]: A file-based pipeline that validates, fraud-scores, and settles transactions
+        - listitem [ref=f4e16]:
+          - text: Every stage communicates only through JSON files under
+          - code [ref=f4e17]: shared/
+          - text: — no in-process calls between stages
+        - listitem [ref=f4e18]:
+          - text: Built entirely by four collaborating AI agents, each with a fixed scope and a durable rulebook (
+          - code [ref=f4e19]: agents.md
+          - text: )
+        - listitem [ref=f4e20]: Ships with a Flask dashboard, a custom MCP server, two Claude Code skills, and a coverage-gate push hook
+      - generic [ref=f4e21]:
+        - heading "Why this matters" [level=3] [ref=f4e22]
+        - paragraph [ref=f4e23]: "Financial pipelines need auditability and precision: exact decimal math, ISO 4217 currency checks, PII masking, and a full log trail per transaction — enforced the same way regardless of which agent touches the code."
+    - generic [ref=f4e24]:
+      - generic [ref=f4e25]: Transaction Processing Pipeline Capstone
+      - generic [ref=f4e26]: 2 / 9
+  - generic [ref=f4e27]:
+    - heading "The Four-Agent Workflow" [level=2] [ref=f4e28]
+    - table [ref=f4e29]:
+      - rowgroup [ref=f4e30]:
+        - row "Agent Role Produces Plus" [ref=f4e31]:
+          - columnheader "Agent" [ref=f4e32]
+          - columnheader "Role" [ref=f4e33]
+          - columnheader "Produces" [ref=f4e34]
+          - columnheader "Plus" [ref=f4e35]
+        - 'row "1 — Specification Defines pipeline behavior specification.md, agents.md Skill: /write-spec" [ref=f4e36]':
+          - cell "1 — Specification" [ref=f4e37]
+          - cell "Defines pipeline behavior" [ref=f4e38]
+          - cell "specification.md, agents.md" [ref=f4e39]:
+            - code [ref=f4e40]: specification.md
+            - text: ","
+            - code [ref=f4e41]: agents.md
+          - 'cell "Skill: /write-spec" [ref=f4e42]':
+            - text: "Skill:"
+            - code [ref=f4e43]: /write-spec
+        - 'row "2 — Code Generation Builds pipeline + front-end orchestrator.py, pipeline/*.py, frontend/ MCP: context7 (2+ queries logged)" [ref=f4e44]':
+          - cell "2 — Code Generation" [ref=f4e45]
+          - cell "Builds pipeline + front-end" [ref=f4e46]
+          - cell "orchestrator.py, pipeline/*.py, frontend/" [ref=f4e47]:
+            - code [ref=f4e48]: orchestrator.py
+            - text: ","
+            - code [ref=f4e49]: pipeline/*.py
+            - text: ","
+            - code [ref=f4e50]: frontend/
+          - 'cell "MCP: context7 (2+ queries logged)" [ref=f4e51]'
+        - 'row "3 — Unit Tests Verifies behavior + coverage tests/* (29 tests) Hook: blocks push under 80% coverage" [ref=f4e52]':
+          - cell "3 — Unit Tests" [ref=f4e53]
+          - cell "Verifies behavior + coverage" [ref=f4e54]
+          - cell "tests/* (29 tests)" [ref=f4e55]:
+            - code [ref=f4e56]: tests/*
+            - text: (29 tests)
+          - 'cell "Hook: blocks push under 80% coverage" [ref=f4e57]'
+        - row "4 — Documentation Explains the finished system README.md, HOWTORUN.md Author line + architecture diagram" [ref=f4e58]:
+          - cell "4 — Documentation" [ref=f4e59]
+          - cell "Explains the finished system" [ref=f4e60]
+          - cell "README.md, HOWTORUN.md" [ref=f4e61]:
+            - code [ref=f4e62]: README.md
+            - text: ","
+            - code [ref=f4e63]: HOWTORUN.md
+          - cell "Author line + architecture diagram" [ref=f4e64]
+    - generic [ref=f4e65]:
+      - generic [ref=f4e66]: Transaction Processing Pipeline Capstone
+      - generic [ref=f4e67]: 3 / 9
+  - generic [ref=f4e68]:
+    - heading "Pipeline Architecture" [level=2] [ref=f4e69]
+    - generic [ref=f4e70]:
+      - generic [ref=f4e71]:
+        - generic [ref=f4e72]: orchestrator
+        - generic [ref=f4e73]: loads sample-transactions.json
+      - generic [ref=f4e74]: →
+      - generic [ref=f4e75]:
+        - generic [ref=f4e76]: validator
+        - generic [ref=f4e77]: fields, decimal amount, ISO 4217
+      - generic [ref=f4e78]: →
+      - generic [ref=f4e79]:
+        - generic [ref=f4e80]: fraud_detector
+        - generic [ref=f4e81]: risk_score 0-100
+      - generic [ref=f4e82]: →
+      - generic [ref=f4e83]:
+        - generic [ref=f4e84]: settlement
+        - generic [ref=f4e85]: settled_at timestamp
+      - generic [ref=f4e86]: →
+      - generic [ref=f4e87]:
+        - generic [ref=f4e88]: shared/results/
+        - generic [ref=f4e89]: + pipeline_summary.json
+    - paragraph [ref=f4e90]:
+      - text: Intermediate hops (
+      - code [ref=f4e91]: input/ → processing/ → output/
+      - text: ) use a JSON envelope (message_id, source_stage, target_stage, data).
+      - text: Terminal records in
+      - code [ref=f4e92]: shared/results/
+      - text: are flat, so the MCP server and front-end can read
+      - code [ref=f4e93]: status
+      - text: directly.
+    - generic [ref=f4e94]:
+      - generic [ref=f4e95]: Transaction Processing Pipeline Capstone
+      - generic [ref=f4e96]: 4 / 9
+  - generic [ref=f4e97]:
+    - heading "Fraud Detection Logic" [level=2] [ref=f4e98]
+    - generic [ref=f4e99]:
+      - generic [ref=f4e100]:
+        - 'heading "Scoring factors (flag threshold: 50)" [level=3] [ref=f4e101]'
+        - list [ref=f4e102]:
+          - listitem [ref=f4e103]: Amount over $10,000 absolute value → +60
+          - listitem [ref=f4e104]: Cross-border (metadata.country ≠ domestic market) → +30
+          - listitem [ref=f4e105]: Off-hours timestamp (00:00–05:00 UTC) → +30
+        - paragraph [ref=f4e106]: Weights are a documented, adjustable default — flagged as a [PLACEHOLDER] business rule in specification.md, not an invented hard requirement.
+      - generic [ref=f4e107]:
+        - heading "Verified against real sample data" [level=3] [ref=f4e108]
+        - list [ref=f4e109]:
+          - listitem [ref=f4e110]: TXN002 / TXN005 — high-value wires ($25k / $75k) → flagged
+          - listitem [ref=f4e111]: TXN004 — €500 transfer, 02:47 UTC, Germany → flagged (cross-border + off-hours)
+          - listitem [ref=f4e112]: TXN003 — $9,999.99, just under threshold → correctly passes
+          - listitem [ref=f4e113]: TXN007 — negative amount, but a refund → correctly valid
+    - generic [ref=f4e114]:
+      - generic [ref=f4e115]: Transaction Processing Pipeline Capstone
+      - generic [ref=f4e116]: 5 / 9
+  - generic [ref=f4e117]:
+    - 'heading "Demo: Pipeline Run" [level=2] [ref=f4e118]'
+    - img [ref=f4e120]
+    - generic [ref=f4e121]:
+      - generic [ref=f4e122]:
+        - generic [ref=f4e123]: "8"
+        - generic [ref=f4e124]: Total
+      - generic [ref=f4e125]:
+        - generic [ref=f4e126]: "4"
+        - generic [ref=f4e127]: Settled
+      - generic [ref=f4e128]:
+        - generic [ref=f4e129]: "3"
+        - generic [ref=f4e130]: Flagged
+      - generic [ref=f4e131]:
+        - generic [ref=f4e132]: "1"
+        - generic [ref=f4e133]: Rejected
+    - generic [ref=f4e134]:
+      - generic [ref=f4e135]: Transaction Processing Pipeline Capstone
+      - generic [ref=f4e136]: 6 / 9
+  - generic [ref=f4e137]:
+    - 'heading "Demo: Front-End Dashboard" [level=2] [ref=f4e138]'
+    - img [ref=f4e140]
+    - generic [ref=f4e141]:
+      - generic [ref=f4e142]: Transaction Processing Pipeline Capstone
+      - generic [ref=f4e143]: 7 / 9
+  - generic [ref=f4e144]:
+    - heading "Testing, Coverage & MCP Integration" [level=2] [ref=f4e145]
+    - generic [ref=f4e146]:
+      - img [ref=f4e148]
+      - img [ref=f4e150]
+    - generic [ref=f4e151]:
+      - generic [ref=f4e152]: Transaction Processing Pipeline Capstone
+      - generic [ref=f4e153]: 8 / 9
+  - generic [ref=f4e154]:
+    - heading "Lessons Learned" [level=2] [ref=f4e155]
+    - generic [ref=f4e156]:
+      - generic [ref=f4e157]:
+        - heading "What worked well" [level=3] [ref=f4e158]
+        - list [ref=f4e159]:
+          - listitem [ref=f4e160]: Splitting agents by strict file-ownership (spec/code/tests/docs) kept scope creep out — each agent had a one-line "never touch" list
+          - listitem [ref=f4e161]:
+            - text: "The integration test caught a real bug: terminal envelopes weren't deleted from"
+            - code [ref=f4e162]: shared/output/
+            - text: ", leaving stale files behind"
+          - listitem [ref=f4e163]: Marking unresolved business rules (fraud weights) as [PLACEHOLDER] in the spec avoided silently inventing thresholds
+      - generic [ref=f4e164]:
+        - heading "Challenges & fixes" [level=3] [ref=f4e165]
+        - list [ref=f4e166]:
+          - listitem [ref=f4e167]:
+            - text: "Discovered a data-contract mismatch: the pre-built MCP server expected flat records in"
+            - code [ref=f4e168]: shared/results/
+            - text: ", not envelopes — fixed pipeline stages to match"
+          - listitem [ref=f4e169]: High-value weight (+40) alone didn't clear the 50-point flag threshold — retuned to +60 and re-verified against the spec's stated outcomes
+          - listitem [ref=f4e170]:
+            - text: Local
+            - code [ref=f4e171]: mcp/
+            - text: package name collides with the installed
+            - code [ref=f4e172]: mcp
+            - text: SDK on import — not an issue since the server runs standalone as a subprocess
+    - generic [ref=f4e173]:
+      - generic [ref=f4e174]: Transaction Processing Pipeline Capstone — Created by Artem Saienko
+      - generic [ref=f4e175]: 9 / 9
